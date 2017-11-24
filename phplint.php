@@ -1,3 +1,3 @@
 <?php
 
-require('./lib/cli.php');
+require(__DIR__ . '/lib/cli.php');
