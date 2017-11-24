@@ -20,8 +20,12 @@ class KeywordSpacingRule extends Rule {
     // TokenKind::EndSwitchKeyword,
     // TokenKind::EndWhileKeyword,
     // TokenKind::ExitKeyword,
+    TokenKind::IncludeKeyword,
+    TokenKind::IncludeOnceKeyword,
     TokenKind::IsSetKeyword,
     TokenKind::ListKeyword,
+    TokenKind::RequireKeyword,
+    TokenKind::RequireOnceKeyword,
     // TokenKind::ReturnKeyword,
     TokenKind::UnsetKeyword,
   ];
