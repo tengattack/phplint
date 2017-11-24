@@ -1,0 +1,18 @@
+rules:
+  no-exit: "error"
+  no-eval: "error"
+  no-array-constructor: "error"
+  no-camelcase: "error"
+  no-whitespace-before-property: "error"
+  no-lonely-if: "error"
+  switch-colon-spacing: "error"
+  space-infix-ops: "error"
+  space-in-parens: "error"
+  eqeqeq: "error"
+  curly: [ "error", "multi" ]
+  array-bracket-spacing: [ "error", "never" ]
+  comma-spacing: [ "error", { "before": false, "after": true } ]
+  keyword-spacing: [ "error", { "before": true, "after": true } ]
+  space-before-function-paren: [ "error", "never" ]
+  space-before-blocks: [ "error", "always" ]
+  no-multi-spaces: "error"

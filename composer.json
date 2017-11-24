@@ -1,0 +1,5 @@
+{
+    "require": {
+        "microsoft/tolerant-php-parser": "^0.0.8"
+    }
+}
