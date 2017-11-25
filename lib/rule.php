@@ -23,13 +23,17 @@ class Rule {
     return 'unknown';
   }
 
-  static function isSpace(string $str, bool $withNewLine): bool {
+  static function removeComments(string $str): string {
     // remove comments
-    // type: // ...
-    $str = preg_replace('/\/\/.*$/mU', '', $str);
     // type: /* ... */
     $str = preg_replace('/\/\*.+\*\//sU', '', $str);
+    // type: // ...
+    $str = preg_replace('/\/\/.*$/mU', '', $str);
+    return $str;
+  }
 
+  static function isSpace(string $str, bool $withNewLine): bool {
+    $str = Rule::removeComments($str);
     if ($withNewLine) {
       preg_match('/^\s+$/', $str, $matches);
     } else {
