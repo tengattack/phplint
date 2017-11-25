@@ -2,7 +2,7 @@
 
 use Microsoft\PhpParser\TokenKind;
 
-class SpaceBeforeFunctionParenRule extends Rule {
+class FuncCallSpacingRule extends Rule {
 
   private $spaced = false;
 
@@ -14,8 +14,8 @@ class SpaceBeforeFunctionParenRule extends Rule {
 
   public function filters() {
     return [
-      'FunctionDeclaration',
-      'MethodDeclaration',
+      'CallExpression',
+      'ObjectCreationExpression',
     ];
   }
 
@@ -32,7 +32,7 @@ class SpaceBeforeFunctionParenRule extends Rule {
   private function check(&$node) {
     foreach ($node->getChildTokens() as $token) {
       if ($token->kind === TokenKind::OpenParenToken) {
-        $hasSpace = $this->isSpaceBeforeToken($token, $this->spaced);
+        $hasSpace = $this->isSpaceBeforeToken($token, true);
         if ($hasSpace && !$this->spaced) {
           $this->reportNoEndingSpace($token);
         } elseif (!$hasSpace && $this->spaced) {
@@ -42,14 +42,14 @@ class SpaceBeforeFunctionParenRule extends Rule {
     }
   }
 
-  public function FunctionDeclaration(&$node) {
+  public function CallExpression(&$node) {
     $this->check($node);
   }
 
-  public function MethodDeclaration(&$node) {
+  public function ObjectCreationExpression(&$node) {
     $this->check($node);
   }
 
 }
 
-return 'SpaceBeforeFunctionParenRule';
+return 'FuncCallSpacingRule';
