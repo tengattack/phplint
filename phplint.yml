@@ -18,3 +18,4 @@ rules:
   no-multi-spaces: "error"
   func-call-spacing: [ "error", "never" ]
   spaced-comment: [ "error", "always", { "exceptions": "-+*" } ]
+  function-brace-newline: [ "error", { "anonymous": false, "named": true } ]
