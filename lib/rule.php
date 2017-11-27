@@ -1,5 +1,7 @@
 <?php
 
+use Microsoft\PhpParser\Token;
+
 class Rule {
 
   protected $context;
@@ -55,6 +57,34 @@ class Rule {
 
   public function getTokenText(&$token) {
     return $token->getText($this->context->astNode->fileContents);
+  }
+
+  public function getPreviousToken(&$node, &$token) {
+    $parent = $node;
+    $current = $token;
+    $prevToken = null;
+
+    while ($parent !== null) {
+      $isfirst = true;
+      foreach ($parent->getChildNodesAndTokens() as $child) {
+        if ($child === $current) {
+          if (!$isfirst) {
+            return $prevToken;
+          }
+        } else if ($child instanceof Token) {
+          $isfirst = false;
+          $prevToken = $child;
+        } else {
+          $isfirst = false;
+          // ignore Node
+          $prevToken = null;
+        }
+      }
+      $current = $parent;
+      $parent = $parent->parent;
+    }
+
+    return null;
   }
 
   public function isSpaceBeforeToken(&$token, bool $withNewLine = false): bool {

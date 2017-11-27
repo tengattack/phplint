@@ -78,22 +78,16 @@ class KeywordSpacingRule extends Rule {
     $position = $token->getEndPosition();
 
     $nextChild = null;
-    $prevToken = null;
+    $prevToken = $this->getPreviousToken($node, $token);
     foreach ($node->getChildNodesAndTokens() as $child) {
       if ($child->getFullStart() >= $position) {
         $nextChild = $child;
         break;
-      } else {
-        if ($child instanceof Token) {
-          $prevToken = $child;
-        } else {
-          $prevToken = null;
-        }
       }
     }
 
     // ignore keyword before spacing checking after (
-    if (!$prevToken || $prevToken->kind === TokenKind::OpenParenToken) {
+    if (!$prevToken || $prevToken->kind !== TokenKind::OpenParenToken) {
       $hasSpace = $this->isSpaceBeforeToken($token, $this->spacedBefore);
       if ($hasSpace && !$this->spacedBefore) {
         $this->reportNoEndingSpace($token);
