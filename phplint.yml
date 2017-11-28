@@ -20,3 +20,5 @@ rules:
   spaced-comment: [ "error", "always", { "exceptions": "-+*" } ]
   function-brace-newline: [ "error", { "anonymous": false, "named": true } ]
   no-multiple-empty-lines: [ "error", { max: 2 } ]
+  no-extra-semi: "error"
+  no-empty: [ "error", { "allowEmptyCatch": true } ]
