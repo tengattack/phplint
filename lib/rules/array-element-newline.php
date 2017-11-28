@@ -1,6 +1,6 @@
 <?php
 
-use Microsoft\PhpParser\TokenKind;
+use Microsoft\PhpParser\{Token, TokenKind};
 
 class ArrayElementNewlineRule extends Rule {
 
@@ -29,12 +29,17 @@ class ArrayElementNewlineRule extends Rule {
     ];
   }
 
-  public function reportNoLineBreak(&$node) {
-    $this->report($node, 'There should be no linebreak here.');
+  public function reportNoLineBreak(&$child) {
+    $this->report($child, 'There should be no linebreak here.');
   }
 
-  public function reportRequiredLineBreak(&$node) {
-    $this->report($node, 'There should be a linebreak before this element.');
+  public function reportRequiredLineBreak(&$child) {
+    if ($child instanceof Token) {
+      $displayValue = "'" . $this->getTokenText($child) . "'";
+    } else {
+      $displayValue = 'this element';
+    }
+    $this->report($child, "There should be a linebreak before $displayValue.");
   }
 
   public function ArrayElementList(&$node) {
