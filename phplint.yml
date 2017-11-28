@@ -22,3 +22,4 @@ rules:
   no-multiple-empty-lines: [ "error", { max: 2 } ]
   no-extra-semi: "error"
   no-empty: [ "error", { "allowEmptyCatch": true } ]
+  array-element-newline: [ "error", { "multiline": true } ]
