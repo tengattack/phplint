@@ -23,6 +23,7 @@ class CommaSpacingRule extends Rule {
     return [
       'ArrayElementList',
       'ParameterDeclarationList',
+      'ArgumentExpressionList',
     ];
   }
 
@@ -83,6 +84,10 @@ class CommaSpacingRule extends Rule {
   }
 
   public function ParameterDeclarationList(&$node) {
+    $this->check($node);
+  }
+
+  public function ArgumentExpressionList(&$node) {
     $this->check($node);
   }
 
