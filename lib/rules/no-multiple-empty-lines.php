@@ -31,11 +31,11 @@ class NoMultipleEmptyLinesRule extends Rule {
       $offset = 0;
       $lastOffset = 0;
       while (true) {
-        preg_match('/(\r?\n){'.($this->max + 1).',}/sU', $text, $matches, PREG_OFFSET_CAPTURE, $lastOffset);
+        preg_match('/(\r?\n){'.($this->max + 1).',}/s', $text, $matches, PREG_OFFSET_CAPTURE, $lastOffset);
         if (!empty($matches)) {
           $offset = $matches[0][1];
           $lastOffset = $offset + strlen($matches[0][0]);
-          $this->report($token, $token->fullStart + $offset + 1, 'Unexcepted multiple empty lines.');
+          $this->report($token, $token->fullStart + $lastOffset - 1, 'Unexcepted multiple empty lines.');
         } else {
           break;
         }
