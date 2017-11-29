@@ -59,6 +59,18 @@ class Rule {
     return $token->getText($this->context->astNode->fileContents);
   }
 
+  public function getDescendantLastToken(&$node) {
+    $lastToken = null;
+    foreach ($node->getChildNodesAndTokens() as $child) {
+      if ($child instanceof Token) {
+        $lastToken = $child;
+      } else {
+        $lastToken = null;
+      }
+    }
+    return $lastToken;
+  }
+
   public function getPreviousToken(&$node, &$token) {
     $parent = $node;
     $current = $token;
@@ -76,8 +88,7 @@ class Rule {
           $prevToken = $child;
         } else {
           $isfirst = false;
-          // ignore Node
-          $prevToken = null;
+          $prevToken = $this->getDescendantLastToken($child);
         }
       }
       $current = $parent;
