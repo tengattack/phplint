@@ -7,26 +7,42 @@ require ROOT . "/vendor/autoload.php";
 require_once ROOT . '/lib/rule.php';
 require_once ROOT . '/lib/parser.php';
 
+function errorAndExit($error) {
+  echo $error . "\n";
+  exit(1);
+}
+
 $fileName = '';
+$configFile = ROOT . '/phplint.yml';
 for ($i = 1; $i < count($argv); $i++) {
   switch ($argv[$i]) {
   case '-v':
     define('VERBOSE', 1);
+    break;
+  case '-c':
+    if ($i < count($argv) - 1) {
+      $i++;
+      $configFile = $argv[$i];
+    } else {
+      errorAndExit('Missing config file');
+    }
     break;
   default:
     $fileName = $argv[$i];
   }
 }
 if (!$fileName) {
-  echo 'Missing target php file';
-  exit;
+  errorAndExit('Missing target php file');
 }
 
-$config = yaml_parse_file(ROOT . '/phplint.yml');
+if (!file_exists($configFile)) {
+  errorAndExit('Config file not exists');
+}
+
+$config = yaml_parse_file($configFile);
 
 if (!array_key_exists('rules', $config) || empty($config['rules'])) {
-  echo 'phplint.yaml do not contains rules options';
-  exit;
+  errorAndExit('Config file do not contains rules options');
 }
 
 $rules = [];
