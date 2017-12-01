@@ -7,13 +7,13 @@ A configurable linter tool for PHP.
 ### Installation
 
 ```sh
-$ composer install
+$ composer install phplint
 ```
 
 ### Run
 
 ```sh
-$ php phplint.php /path/to/phpfile
+$ php bin/phplint /path/to/phpfile
 ```
 
 ## License

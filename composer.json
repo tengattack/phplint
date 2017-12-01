@@ -1,5 +1,21 @@
 {
+    "name": "tengattack/phplint",
+    "description": "A configurable linter tool for PHP.",
+    "version": "0.0.1",
+    "type": "library",
+    "keywords": ["phplint","parser","lint","linter"],
+    "homepage": "https://github.com/tengattack/phplint",
+    "authors" : [
+        {
+            "name" : "tengattack"
+        }
+    ],
+    "license": "MIT",
     "require": {
-        "microsoft/tolerant-php-parser": "^0.0.8"
-    }
+        "microsoft/tolerant-php-parser": "^0.0.8",
+        "php": ">=7.0"
+    },
+    "bin": [
+        "bin/phplint"
+    ]
 }
