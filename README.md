@@ -13,7 +13,8 @@ $ composer global require tengattack/phplint
 ### Run
 
 ```sh
-$ php bin/phplint /path/to/phpfile
+$ export PATH=$PATH:~/.composer/vendor/bin
+$ phplint /path/to/phpfile
 ```
 
 ## License

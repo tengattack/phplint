@@ -3,7 +3,11 @@
 define('ROOT', dirname(__DIR__));
 
 // Autoload required classes
-require ROOT . "/vendor/autoload.php";
+if (file_exists(ROOT . '/vendor/autoload.php')) {
+  require ROOT . "/vendor/autoload.php";
+} else {
+  require ROOT . "/../../autoload.php";
+}
 require_once ROOT . '/lib/rule.php';
 require_once ROOT . '/lib/parser.php';
 
