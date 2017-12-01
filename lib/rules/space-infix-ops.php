@@ -9,10 +9,12 @@ class SpaceInfixOpsRule extends Rule {
   public function filters() {
     return [
       'BinaryExpression',
+      'TernaryExpression',
+      'AssignmentExpression',
     ];
   }
 
-  public function BinaryExpression(&$node) {
+  public function check(&$node) {
     $start = false;
     foreach ($node->getChildNodesAndTokens() as $child) {
       if ($child instanceof Token) {
@@ -25,10 +27,22 @@ class SpaceInfixOpsRule extends Rule {
           continue;
         }
         if (!$this->isSpaceBeforeNode($child, true)) {
-          $this->report($node, SpaceInfixOpsRule::$MESSAGE);
+          $this->report($node, $child->getFullStart(), SpaceInfixOpsRule::$MESSAGE);
         }
       }
     }
+  }
+
+  public function BinaryExpression(&$node) {
+    return $this->check($node);
+  }
+
+  public function TernaryExpression(&$node) {
+    return $this->check($node);
+  }
+
+  public function AssignmentExpression(&$node) {
+    return $this->check($node);
   }
 
 }
