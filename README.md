@@ -7,7 +7,7 @@ A configurable linter tool for PHP.
 ### Installation
 
 ```sh
-$ composer install phplint
+$ composer global require tengattack/phplint
 ```
 
 ### Run
