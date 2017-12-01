@@ -11,6 +11,7 @@ class SpaceInfixOpsRule extends Rule {
       'BinaryExpression',
       'TernaryExpression',
       'AssignmentExpression',
+      'ArrayElement',
     ];
   }
 
@@ -42,6 +43,11 @@ class SpaceInfixOpsRule extends Rule {
   }
 
   public function AssignmentExpression(&$node) {
+    return $this->check($node);
+  }
+
+  public function ArrayElement(&$node) {
+    // only work for DoubleArrowToken
     return $this->check($node);
   }
 
