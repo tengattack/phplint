@@ -61,7 +61,7 @@ class Rule {
 
   public function getDescendantLastToken(&$node) {
     $lastToken = null;
-    foreach ($node->getChildNodesAndTokens() as $child) {
+    foreach ($node->getDescendantNodesAndTokens() as $child) {
       if ($child instanceof Token) {
         $lastToken = $child;
       } else {
