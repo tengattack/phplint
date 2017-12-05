@@ -29,8 +29,8 @@ class Rule {
     // remove comments
     // type: /* ... */
     $str = preg_replace('/\/\*.+\*\//sU', '', $str);
-    // type: // ...
-    $str = preg_replace('/\/\/.*$/mU', '', $str);
+    // type: // ... or # ...
+    $str = preg_replace('/(\/\/|#).*$/mU', '', $str);
     return $str;
   }
 
