@@ -31,6 +31,10 @@ class SpacedCommentRule extends Rule {
     if (strlen($commentBody) > 0) {
       // check begin
       $displayValue = substr($text, $start, 2);
+      if ($displayValue[0] !== '/') {
+        // # ...
+        $displayValue = '#';
+      }
       $chr = $commentBody[0];
       $hasSpace = in_array($chr, [' ', "\t", "\n"]);
       if ($hasSpace && !$this->spaced) {
@@ -64,13 +68,13 @@ class SpacedCommentRule extends Rule {
     $start = 0;
     $end = 0;
     while (true) {
-      preg_match('/\/\/(.*)$/mU', $text, $matches, PREG_OFFSET_CAPTURE, $end);
+      preg_match('/(\/\/|#)(.*)$/mU', $text, $matches, PREG_OFFSET_CAPTURE, $end);
       if (empty($matches)) {
         break;
       }
       $start = $matches[0][1];
       $end = $start + strlen($matches[0][0]);
-      $this->checkComment($token, $offset, $matches[1][0], $text, $start);
+      $this->checkComment($token, $offset, $matches[2][0], $text, $start);
     }
   }
 
@@ -91,10 +95,10 @@ class SpacedCommentRule extends Rule {
           break;
         }
         $this->checkComment($token, $token->fullStart, $matches[1][0], $text, $offset, $lastOffset);
-        // last part
-        $str = substr($text, $lastOffset);
-        $this->checkLineComment($token, $token->fullStart + $lastOffset, $str);
       }
+      // last part
+      $str = substr($text, $lastOffset);
+      $this->checkLineComment($token, $token->fullStart + $lastOffset, $str);
     }
   }
 }
