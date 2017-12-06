@@ -1,6 +1,6 @@
 <?php
 
-use Microsoft\PhpParser\{Node, Token};
+use Microsoft\PhpParser\{Node, Token, TokenKind};
 
 class SpaceInfixOpsRule extends Rule {
 
@@ -39,7 +39,31 @@ class SpaceInfixOpsRule extends Rule {
   }
 
   public function TernaryExpression(&$node) {
-    return $this->check($node);
+    $start = false;
+    $lastNode = null;
+    foreach ($node->getChildNodesAndTokens() as $child) {
+      if ($child instanceof Token) {
+        $start = true;
+        $hasSpace = $this->isSpaceBeforeToken($child, true);
+        if ($child->kind === TokenKind::ColonToken && !$lastNode) {
+          // $foo = $bar ?: 1;
+          if ($hasSpace) {
+            $this->report($node, $child->fullStart, 'Shorthand ternary operator should not have spaces inside.');
+          }
+        } elseif (!$hasSpace) {
+          $this->report($node, $child->fullStart, SpaceInfixOpsRule::$MESSAGE);
+        }
+        $lastNode = null;
+      } else if ($child instanceof Node) {
+        $lastNode = $child;
+        if (!$start) {
+          continue;
+        }
+        if (!$this->isSpaceBeforeNode($child, true)) {
+          $this->report($node, $child->getFullStart(), SpaceInfixOpsRule::$MESSAGE);
+        }
+      }
+    }
   }
 
   public function AssignmentExpression(&$node) {
