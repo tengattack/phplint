@@ -25,3 +25,4 @@ rules:
   array-element-newline: [ "error", { "multiline": true } ]
   no-print_r: "error"
   semi-spacing: [ "error", { "before": false, "after": true } ]
+  control-colon-spacing: [ "error", { "before": false, "after": true } ]
