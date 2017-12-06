@@ -4,7 +4,16 @@ use Microsoft\PhpParser\{Node, Token};
 
 class SpaceInParensRule extends Rule {
 
+  static $REQUIRED_SPACE_MESSAGE = "A space is required inside this paren.";
   static $REJECTED_SPACE_MESSAGE = "There should be no spaces inside this paren.";
+
+  private $spaced;
+
+  protected function makeOptions() {
+    $this->spaced = empty($this->options)
+                  ? false
+                  : $this->options[0] === 'always';
+  }
 
   public function filters() {
     return [
@@ -14,32 +23,26 @@ class SpaceInParensRule extends Rule {
   }
 
   public function OpenParenToken(&$token) {
-    // TODO: find next walking in parent
     $node = $this->context->current();
-    $position = $token->getEndPosition();
-
-    $nextChild = null;
-    foreach ($node->getChildNodesAndTokens() as $child) {
-      if ($child->getFullStart() >= $position) {
-        $nextChild = $child;
-        break;
-      }
+    $nextToken = $this->getNextToken($node, $token);
+    if (!$nextToken) {
+      return;
     }
 
-    if ($nextChild instanceof Node) {
-      if ($this->isSpaceBeforeNode($nextChild)) {
-        $this->report($token, $token->fullStart, SpaceInParensRule::$REJECTED_SPACE_MESSAGE);
-      }
-    } else if ($nextChild instanceof Token) {
-      if ($this->isSpaceBeforeToken($nextChild)) {
-        $this->report($token, $token->fullStart, SpaceInParensRule::$REJECTED_SPACE_MESSAGE);
-      }
+    $hasSpace = $this->isSpaceBeforeToken($nextToken, $this->spaced);
+    if ($hasSpace && !$this->spaced) {
+      $this->report($token, $token->fullStart, SpaceInParensRule::$REJECTED_SPACE_MESSAGE);
+    } elseif (!$hasSpace && $this->spaced) {
+      $this->report($token, $token->fullStart, SpaceInParensRule::$REQUIRED_SPACE_MESSAGE);
     }
   }
 
   public function CloseParenToken(&$token) {
-    if ($this->isSpaceBeforeToken($token)) {
+    $hasSpace = $this->isSpaceBeforeToken($token, $this->spaced);
+    if ($hasSpace && !$this->spaced) {
       $this->report($token, $token->fullStart, SpaceInParensRule::$REJECTED_SPACE_MESSAGE);
+    } elseif (!$hasSpace && $this->spaced) {
+      $this->report($token, $token->fullStart, SpaceInParensRule::$REQUIRED_SPACE_MESSAGE);
     }
   }
 

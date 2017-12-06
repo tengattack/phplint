@@ -7,7 +7,7 @@ rules:
   no-lonely-if: "error"
   switch-colon-spacing: "error"
   space-infix-ops: "error"
-  space-in-parens: "error"
+  space-in-parens: [ "error", "never" ]
   eqeqeq: "error"
   curly: [ "error", "multi" ]
   array-bracket-spacing: [ "error", "never" ]
