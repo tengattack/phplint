@@ -98,6 +98,33 @@ class Rule {
     return null;
   }
 
+  public function getNextToken(&$node, &$token) {
+    $parent = $node;
+    $current = $token;
+    $checkNext = false;
+
+    while ($parent !== null) {
+      $checkNext = false;
+      foreach ($parent->getChildNodesAndTokens() as $child) {
+        if ($child === $current) {
+          $checkNext = true;
+        } else if ($child instanceof Token) {
+          if ($checkNext) {
+            return $child;
+          }
+        } else {
+          if ($checkNext) {
+            return $child->getDescendantTokens()->current();
+          }
+        }
+      }
+      $current = $parent;
+      $parent = $parent->parent;
+    }
+
+    return null;
+  }
+
   public function isSpaceBeforeToken(&$token, bool $withNewLine = false): bool {
     $text = $token->getLeadingCommentsAndWhitespaceText($this->context->astNode->fileContents);
     return Rule::isSpace($text, $withNewLine);

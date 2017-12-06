@@ -24,3 +24,4 @@ rules:
   no-empty: [ "error", { "allowEmptyCatch": true } ]
   array-element-newline: [ "error", { "multiline": true } ]
   no-print_r: "error"
+  semi-spacing: [ "error", { "before": false, "after": true } ]
