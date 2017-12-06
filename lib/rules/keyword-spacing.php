@@ -99,9 +99,24 @@ class KeywordSpacingRule extends Rule {
       }
     }
 
+    if ($token->kind === TokenKind::DeclareKeyword) {
+      // http://php.net/manual/zh/control-structures.declare.php
+      // DeclareStatement has special structure, ignore check after spaces
+      // if it is followed by SemicolonToken
+      $lastChild = null;
+      foreach ($node->getChildNodesAndTokens() as $child) {
+        if ($child->getFullStart() >= $position) {
+          $lastChild = $child;
+        }
+      }
+      if ($lastChild && $lastChild instanceof Token
+          && $lastChild->kind === TokenKind::SemicolonToken) {
+        return;
+      }
+    }
     if ($nextChild instanceof Node) {
       $hasSpace = $this->isSpaceBeforeNode($nextChild, $this->spacedAfter);
-    } else if ($nextChild instanceof Token) {
+    } elseif ($nextChild instanceof Token) {
       if ($nextChild->kind === TokenKind::SemicolonToken
          || $nextChild->kind === TokenKind::ColonToken) {
         // ignore keyword after spacing checking before ; or :
