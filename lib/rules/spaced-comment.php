@@ -36,7 +36,7 @@ class SpacedCommentRule extends Rule {
         $displayValue = '#';
       }
       $chr = $commentBody[0];
-      $hasSpace = in_array($chr, [' ', "\t", "\n"]);
+      $hasSpace = in_array($chr, [' ', "\t", "\r", "\n"]);
       if ($hasSpace && !$this->spaced) {
         if (!in_array($chr, $this->exceptions)) {
           $this->report($token, $offset + $start, "Unexpected space after '$displayValue' in comment.");
@@ -51,7 +51,7 @@ class SpacedCommentRule extends Rule {
       // check end
       $displayValue = substr($text, $end - 2, 2);
       $chr = substr($commentBody, -1, 1);
-      $hasSpace = in_array($chr, [' ', "\t", "\n"]);
+      $hasSpace = in_array($chr, [' ', "\t", "\r", "\n"]);
       if ($hasSpace && !$this->spaced) {
         if (!in_array($chr, $this->exceptions)) {
           $this->report($token, $offset + $end - 2, "Unexpected space before '$displayValue' in comment.");
