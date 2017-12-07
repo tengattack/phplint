@@ -56,7 +56,7 @@ class SemiSpacingRule extends Rule {
         }
 
         $nextToken = $this->getNextToken($node, $token);
-        if ($nextToken) {
+        if ($nextToken && $nextToken->kind !== TokenKind::EndOfFileToken) {
           // found next token
           $hasSpace = $this->isSpaceBeforeToken($nextToken, $this->spacedAfter);
           if ($hasSpace && !$this->spacedAfter) {
