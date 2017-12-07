@@ -42,6 +42,9 @@ if (!$fileName) {
 if (!file_exists($configFile)) {
   errorAndExit('Config file not exists');
 }
+if (!file_exists($fileName)) {
+  errorAndExit('Target file not exists');
+}
 
 $config = yaml_parse_file($configFile);
 

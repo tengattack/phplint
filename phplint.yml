@@ -28,3 +28,4 @@ rules:
   control-colon-spacing: [ "error", { "before": false, "after": true } ]
   no-mixed-spaces-and-tabs: "error"
   no-trailing-spaces: "error"
+  no-magic-numbers: [ "error", { "ignore": [1, 200], "ignoreArrayIndexes": true, "enforceConst": true, detectObjects: false } ]
