@@ -57,7 +57,7 @@ class NoMagicNumbersRule extends Rule {
       }
     } elseif ($this->detectObjects && $parentKind === 'ArrayElement') {
       $this->report($node, "No magic number: $raw.");
-    } elseif ($parentKind === 'BinaryExpression') {
+    } elseif ($parentKind === 'BinaryExpression' || $parentKind === 'Parameter') {
       $this->report($node, "No magic number: $raw.");
     }
   }
