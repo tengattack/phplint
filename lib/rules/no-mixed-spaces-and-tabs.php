@@ -11,10 +11,12 @@ class NoMixedSpacesAndTabsRule extends Rule {
   public function ProgramOnExit(&$node) {
     foreach ($node->getChildTokens() as $token) {
       $text = $token->getLeadingCommentsAndWhitespaceText($this->context->astNode->fileContents);
-      if ($text && ($a = strpos($text, "\t")) !== false
-        && ($b = strpos($text, " ")) !== false) {
-        $this->report($token, $token->fullStart + min([$a, $b]),
-          'Mixed spaces and tabs.');
+      if ($text) {
+        preg_match('/(\t+ | +\t)/m', $text, $matches, PREG_OFFSET_CAPTURE);
+        if (!empty($matches)) {
+          $this->report($token, $token->fullStart + $matches[0][1],
+            'Mixed spaces and tabs.');
+        }
       }
     }
   }
