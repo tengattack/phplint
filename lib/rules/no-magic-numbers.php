@@ -40,9 +40,6 @@ class NoMagicNumbersRule extends Rule {
 
   public function NumericLiteral(&$node) {
     $raw = $node->getText();
-    if (in_array((int)$raw, $this->ignore)) {
-      return;
-    }
     $parent = $node->parent;
     $parentKind = $parent ? $parent->getNodeKindName() : null;
     if (!$this->ignoreArrayIndexes && $parentKind === 'SubscriptExpression') {
@@ -57,7 +54,10 @@ class NoMagicNumbersRule extends Rule {
       }
     } elseif ($this->detectObjects && $parentKind === 'ArrayElement') {
       $this->report($node, "No magic number: $raw.");
-    } elseif ($parentKind === 'BinaryExpression' || $parentKind === 'Parameter') {
+    } elseif ($parentKind === 'BinaryExpression' || $parentKind === 'Parameter' || !$parentKind) {
+      if (in_array((int)$raw, $this->ignore)) {
+        return;
+      }
       $this->report($node, "No magic number: $raw.");
     }
   }
