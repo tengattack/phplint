@@ -17,15 +17,41 @@ function errorAndExit($error) {
   exit(1);
 }
 
+function printUsage() {
+  echo implode("\n", [
+    'phplint [options] file.php',
+    '',
+    'Basic configuration:',
+    '  -h, --help                     Show this help',
+    '  -c, --config path::String      Use configuration from this file or shareable config',
+    '  --verbose                      Verbose mode',
+    '',
+    'Output:',
+    '  -f, --format String            Use a specific output format - default: table',
+    '',
+  ]);
+}
+
+if (count($argv) < 2) {
+  printUsage();
+  exit(0);
+}
+
 $fileName = '';
 $formatter = 'table';
 $configFile = ROOT . '/phplint.yml';
 for ($i = 1; $i < count($argv); $i++) {
   switch ($argv[$i]) {
-  case '-v':
+  case '-h':
+  case '--help':
+    printUsage();
+    exit(0);
+    break;
+  case '--verbose':
     define('VERBOSE', 1);
     break;
   case '-f':
+  case '--format':
     if ($i < count($argv) - 1) {
       $i++;
       $formatter = $argv[$i];
@@ -34,6 +60,7 @@ for ($i = 1; $i < count($argv); $i++) {
     }
     break;
   case '-c':
+  case '--config':
     if ($i < count($argv) - 1) {
       $i++;
       $configFile = $argv[$i];
