@@ -13,7 +13,8 @@
     "license": "MIT",
     "require": {
         "microsoft/tolerant-php-parser": "^0.0.8",
-        "php": ">=7.0"
+        "php": ">=7.0",
+        "wp-cli/php-cli-tools": "^0.11.8"
     },
     "bin": [
         "bin/phplint"

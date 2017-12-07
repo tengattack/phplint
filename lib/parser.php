@@ -12,7 +12,7 @@ function parseSourceCode(string &$source) {
   return $astNode;
 }
 
-function processText(string $source, $rules) {
+function processSource(string $source, &$rules, string $fileName = '') {
   $astNode = parseSourceCode($source);
 
   $context = new Context($astNode);
@@ -21,5 +21,10 @@ function processText(string $source, $rules) {
   $traverse = new Traverse($astNode);
   $traverse->walk($context);
 
-  return $context->getReport();
+  return $context->getReport($fileName);
+}
+
+function processFile(string $fileName, &$rules) {
+  $source = file_get_contents($fileName);
+  return processSource($source, $rules, $fileName);
 }

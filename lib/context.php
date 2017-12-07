@@ -174,8 +174,8 @@ class Context {
     $this->stats []= new Stat($ruleId, $severity, $node, $loc, $message, $data, $fix);
   }
 
-  public function getReport() {
-    return new Report($this, $this->stats);
+  public function getReport(string $fileName) {
+    return new Report($fileName, $this, $this->stats);
   }
 
 }

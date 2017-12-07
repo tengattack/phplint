@@ -10,6 +10,7 @@ if (file_exists(ROOT . '/vendor/autoload.php')) {
 }
 require_once ROOT . '/lib/rule.php';
 require_once ROOT . '/lib/parser.php';
+require_once ROOT . '/lib/formatter.php';
 
 function errorAndExit($error) {
   echo $error . "\n";
@@ -17,11 +18,20 @@ function errorAndExit($error) {
 }
 
 $fileName = '';
+$formatter = 'table';
 $configFile = ROOT . '/phplint.yml';
 for ($i = 1; $i < count($argv); $i++) {
   switch ($argv[$i]) {
   case '-v':
     define('VERBOSE', 1);
+    break;
+  case '-f':
+    if ($i < count($argv) - 1) {
+      $i++;
+      $formatter = $argv[$i];
+    } else {
+      errorAndExit('Missing formatter param');
+    }
     break;
   case '-c':
     if ($i < count($argv) - 1) {
@@ -45,6 +55,9 @@ if (!file_exists($configFile)) {
 if (!file_exists($fileName)) {
   errorAndExit('Target file not exists');
 }
+if (!Formatter::exists($formatter)) {
+  errorAndExit("Specified formatter '$formatter' not found");
+}
 
 $config = yaml_parse_file($configFile);
 
@@ -57,7 +70,7 @@ foreach ($config['rules'] as $rule => $level) {
   $rules[$rule] = $level;
 }
 
-$source = file_get_contents($fileName);
-$report = processText($source, $rules);
+$report = processFile($fileName, $rules);
 
-echo json_encode($report->getMessages(), JSON_UNESCAPED_UNICODE);
+$format = new Formatter($formatter, [ $report ]);
+echo $format->render();

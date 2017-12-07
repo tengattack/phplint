@@ -1,18 +1,22 @@
 <?php
 
+require_once ROOT . '/lib/result.php';
+
 use Microsoft\PhpParser\{Node, Token};
 
 class Report {
 
+  private $filePath;
   private $context;
   private $stats;
 
-  function __construct(&$context, &$stats) {
+  function __construct(string $filePath, &$context, &$stats) {
+    $this->filePath = $filePath;
     $this->context = $context;
     $this->stats = $stats;
   }
 
-  function getMessages() {
+  public function getMessages() {
     $messages = [];
 
     foreach ($this->stats as &$stat) {
@@ -35,4 +39,9 @@ class Report {
 
     return $messages;
   }
+
+  public function getResult() {
+    return new Result($this->filePath, $this->getMessages());
+  }
+
 }
