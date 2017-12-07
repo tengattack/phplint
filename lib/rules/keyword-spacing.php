@@ -45,6 +45,7 @@ class KeywordSpacingRule extends Rule {
   public function filters() {
     return [
       'Keyword',
+      'Tag',
     ];
   }
 
@@ -132,6 +133,34 @@ class KeywordSpacingRule extends Rule {
       $this->reportNoBeginningSpace($token);
     } elseif (!$hasSpace && $this->spacedAfter) {
       $this->reportRequiredBeginningSpace($token);
+    }
+  }
+
+  public function Tag(&$token) {
+    switch ($token->kind) {
+    case TokenKind::ScriptSectionStartTag:
+      $tag = $this->getTokenText($token);
+      if ($tag === '<?=') {
+        // ensure `<?= $foo` has spaces inside
+        $nextToken = $this->getNextToken($this->context->current(), $token);
+        if ($nextToken) {
+          $hasSpace = $this->isSpaceBeforeToken($nextToken, $this->spacedAfter);
+          if ($hasSpace && !$this->spacedAfter) {
+            $this->reportNoBeginningSpace($token);
+          } elseif (!$hasSpace && $this->spacedAfter) {
+            $this->reportRequiredBeginningSpace($token);
+          }
+        }
+      }
+      break;
+    case TokenKind::ScriptSectionEndTag:
+      $hasSpace = $this->isSpaceBeforeToken($token, $this->spacedBefore);
+      if ($hasSpace && !$this->spacedBefore) {
+        $this->reportNoEndingSpace($token);
+      } elseif (!$hasSpace && $this->spacedBefore) {
+        $this->reportRequiredEndingSpace($token);
+      }
+      break;
     }
   }
 

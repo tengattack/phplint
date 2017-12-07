@@ -7,8 +7,13 @@ class Selector {
   public $isAnyType;
   public $name;
 
+  static function getTokenType(string $name) {
+    preg_match('/^(.*)(Token|Keyword|Tag)$/', $name, $matches);
+    return empty($matches) ? null : $matches[2];
+  }
+
   public function parse(string $name) {
-    preg_match('/^(.*)(Token|Keyword)$/', $name, $matches);
+    preg_match('/^(.*)(Token|Keyword|Tag)$/', $name, $matches);
     if (!empty($matches)) {
       $this->isToken = true;
       $this->isAnyType = !$matches[1];

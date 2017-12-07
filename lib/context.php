@@ -89,13 +89,12 @@ class Context {
       }
     }
     // any token
-    preg_match('/^(.*)(Token|Keyword)$/', $type, $matches);
-    if (!empty($matches)) {
-      $type = $matches[2];
-      if (array_key_exists($type, $this->anyTokenSelectors)) {
-        $selectors = $this->anyTokenSelectors[$type];
+    $tokenType = Selector::getTokenType($type);
+    if ($tokenType) {
+      if (array_key_exists($tokenType, $this->anyTokenSelectors)) {
+        $selectors = $this->anyTokenSelectors[$tokenType];
         foreach ($selectors as &$rule) {
-          $rule->$type($token);
+          $rule->$tokenType($token);
         }
       }
     }
