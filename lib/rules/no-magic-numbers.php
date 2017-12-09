@@ -44,7 +44,11 @@ class NoMagicNumbersRule extends Rule {
     $parentKind = $parent ? $parent->getNodeKindName() : null;
     if (!$this->ignoreArrayIndexes && $parentKind === 'SubscriptExpression') {
       $this->report($node, "No magic number: $raw.");
-    } elseif ($this->enforceConst && $parentKind === 'AssignmentExpression') {
+    }
+    if (in_array((int)$raw, $this->ignore)) {
+      return;
+    }
+    if ($this->enforceConst && $parentKind === 'AssignmentExpression') {
       $child = $parent->getChildNodes()->current();
       if ($child && $child->getNodeKindName() === 'Variable') {
         $name = $child->getText();
@@ -55,9 +59,6 @@ class NoMagicNumbersRule extends Rule {
     } elseif ($this->detectObjects && $parentKind === 'ArrayElement') {
       $this->report($node, "No magic number: $raw.");
     } elseif ($parentKind === 'BinaryExpression' || $parentKind === 'Parameter' || !$parentKind) {
-      if (in_array((int)$raw, $this->ignore)) {
-        return;
-      }
       $this->report($node, "No magic number: $raw.");
     }
   }
