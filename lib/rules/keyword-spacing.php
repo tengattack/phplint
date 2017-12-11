@@ -87,9 +87,10 @@ class KeywordSpacingRule extends Rule {
       }
     }
 
-    // ignore keyword before spacing checking after (
+    // ignore keyword before spacing checking after (, [ or script start
     if (!$prevToken || (
         $prevToken->kind !== TokenKind::OpenParenToken
+        && $prevToken->kind !== TokenKind::OpenBracketToken
         && $prevToken->kind !== TokenKind::ScriptSectionStartTag
       )) {
       $hasSpace = $this->isSpaceBeforeToken($token, $this->spacedBefore);
