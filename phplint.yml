@@ -2,7 +2,7 @@ rules:
   no-exit: "error"
   no-eval: "error"
   no-array-constructor: "error"
-  no-camelcase: "error"
+  camelcase: [ "error", "never", { "ignore": [ "Datas", "classMap" ] } ]
   no-whitespace-before-property: "error"
   no-lonely-if: "error"
   switch-colon-spacing: "error"
