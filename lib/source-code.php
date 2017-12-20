@@ -13,6 +13,10 @@ class SourceCode {
     return $token->getText($this->astNode->fileContents);
   }
 
+  public function getLeadingText(&$token) {
+    return $token->getLeadingCommentsAndWhitespaceText($this->astNode->fileContents);
+  }
+
   public function getLocation(int $pos) {
     if (!isset($this->sourceLineOffsets)) {
       // generate source line offset caches

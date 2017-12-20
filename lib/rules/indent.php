@@ -4,33 +4,39 @@ use Microsoft\PhpParser\TokenKind;
 
 class TokenInfo {
 
-  public $context;
+  public $sourceCode;
 
-  function __construct($context) {
-    $this->context = $context;
+  function __construct(&$sourceCode) {
+    $this->sourceCode = $sourceCode;
   }
 
-  public function isFirstTokenOfLine(&$token) {
-    return false;
+  public function getLeadingText(&$token) {
+    return $this->sourceCode->getLeadingText($token);
   }
 
-  public function getLeadingCommentAndWhitespaceText(&$token) {
-    return $token->getLeadingCommentsAndWhitespaceText($this->context->astNode->fileContents);
+  public function getLine(int $pos) {
+    return $this->sourceCode->getLocation($pos)['line'];
   }
 
 }
 
-class Offset {
+class OffsetLine {
   public $start;
   public $end;
   public $token;
   public $indent;
+  public $offset;
 
-  function __construct(int $start, int $end, $token, int $indent) {
+  function __construct(int $start, int $end, $token, int $indent, int $offset) {
     $this->start = $start;
     $this->end = $end;
     $this->token = $token;
     $this->indent = $indent;
+    $this->offset = $offset;
+  }
+
+  function getIndent() {
+    return $this->indent + $this->offset;
   }
 }
 
@@ -43,40 +49,52 @@ class OffsetStorage {
   function __construct($tokenInfo, int $indent = 0) {
     $this->tokenInfo = $tokenInfo;
     $this->indent = $indent;
-    $rootOffset = new Offset(0, strlen($tokenInfo->context->astNode->fileContents), null, $indent);
+    $endLine = $this->tokenInfo->getLine(strlen($tokenInfo->sourceCode->astNode->fileContents));
+    $rootOffset = new OffsetLine(0, $endLine, null, $indent, 0);
     $this->offsetMap = [ $rootOffset ];
   }
 
-  public function setDesiredOffsets($range, &$token, int $offsetValue = 1) {
+  public function setDesiredOffsets($range, $token, $endToken = null, int $offsetValue = 1) {
     if ($range[1] <= $range[0]) {
       // ignore empty range
       return;
     }
-    $newOffset = new Offset($range[0], $range[1], $token, $this->indent + $offsetValue);
+
+    // next line of start position
+    $range[0] = $this->tokenInfo->getLine($range[0]) + 1;
+    $range[1] = $this->tokenInfo->getLine($range[1]);
+    if ($range[1] < $range[0]) {
+      // ignore same line
+      return;
+    }
+    $endLine = $endToken ? $this->tokenInfo->getLine($endToken->start) : 0;
+
+    $newOffset = new OffsetLine($range[0], $range[1], $token, $this->indent, $offsetValue);
     foreach ($this->offsetMap as $i => &$offset) {
       if ($offset->start === $range[0] && $offset->end === $range[1]) {
         // replace
-        $offset->start = $range[0];
-        $offset->end = $range[1];
-        $offset->token = $token;
+        $this->offsetMap[$i] = $newOffset;
         return;
       } elseif ($offset->start === $range[0] && $offset->end > $range[1]) {
         // insert to left
-        $offset->end = $range[1];
-        $newOffset->indent = $offset->indent + $offset;
+        $offset->start = $range[1] + 1;
+        $newOffset->indent = $offset->indent;
+        if ($endLine > $range[1]) {
+          $offset->offset = 0;
+        }
         array_splice($this->offsetMap, $i, 0, [ $newOffset ]);
         return;
       } elseif ($offset->start < $range[0] && $offset->end === $range[1]) {
         // insert to right
-        $offset->start = $range[0];
-        $newOffset->indent = $offset->indent + $offsetValue;
-        array_splice($this->offsetMap, $i - 1, 0, [ $newOffset ]);
+        $offset->end = $range[0] - 1;
+        $newOffset->indent = $offset->indent + $offset->offset;
+        array_splice($this->offsetMap, $i + 1, 0, [ $newOffset ]);
         return;
       } elseif ($offset->start < $range[0] && $offset->end > $range[1]) {
         // insert to center
-        $left = new Offset($offset->start, $range[0], $offset->token, $offset->indent);
-        $right = new Offset($range[1], $offset->end, $offset->token, $offset->indent);
-        $newOffset->indent = $offset->indent + $offsetValue;
+        $left = new OffsetLine($offset->start, $range[0] - 1, $offset->token, $offset->indent, $offset->offset);
+        $right = new OffsetLine($range[1] + 1, $offset->end, $offset->token, $offset->indent, $offset->offset);
+        $newOffset->indent = $offset->indent + $offset->offset;
         array_splice($this->offsetMap, $i, 1, [ $left, $newOffset, $right ]);
         return;
       }
@@ -85,7 +103,7 @@ class OffsetStorage {
       // insert to head
       $offset0 = &$this->offsetMap[0];
       if ($offset0->start < $range[1]) {
-        $offset0->start = $range[1];
+        $offset0->start = $range[1] + 1;
       }
       array_unshift($this->offsetMap, $newOffset);
     } else {
@@ -94,9 +112,10 @@ class OffsetStorage {
   }
 
   public function getDesiredIndentByPosition(int $position) {
+    $line = $this->tokenInfo->getLine($position);
     foreach ($this->offsetMap as $offset) {
-      if ($offset->start <= $position && $offset->end > $position) {
-        return $offset->indent;
+      if ($offset->start <= $line && $offset->end >= $line) {
+        return $offset->getIndent();
       }
     }
     return 0;
@@ -112,6 +131,9 @@ class IndentRule extends Rule {
 
   private $indentType = 'space';
   private $indentSize = 4;
+  private $indentOpts = [
+    'SwitchCase' => 0,
+  ];
   private $offsets;
   private $tokenInfo;
 
@@ -121,11 +143,20 @@ class IndentRule extends Rule {
       if (is_string($opt) && $opt === 'tab') {
         $this->indentType = 'tab';
         $this->indentSize = 1;
+        $opt = $this->options[1] ?? null;
       } elseif (is_numeric($opt)) {
         $this->indentSize = (int)$opt;
+        $opt = $this->options[1] ?? null;
+      }
+      if (is_array($opt)) {
+        foreach ($this->indentOpts as $key => $_) {
+          if (array_key_exists($key, $opt)) {
+            $this->indentOpts[$key] = (int)$opt[$key];
+          }
+        }
       }
     }
-    $this->tokenInfo = new TokenInfo($this->context);
+    $this->tokenInfo = new TokenInfo($this->context->sourceCode);
     $this->offsets = new OffsetStorage($this->tokenInfo);
   }
 
@@ -227,35 +258,39 @@ class IndentRule extends Rule {
         break;
       case TokenKind::ArrowToken:
       case TokenKind::DoubleArrowToken:
-      case TokenKind::ColonToken:
       case TokenKind::ColonColonToken:
-        if ($this->isNewLineBeforeToken($token) || $this->isNewLineAfterToken($token, $node)) {
-          $this->offsets->setDesiredOffsets([$token->start, $node->getEndPosition()], $token);
+      case TokenKind::EqualsToken:
+        $this->offsets->setDesiredOffsets([$token->start, $node->getEndPosition()], $token);
+        break;
+      case TokenKind::ColonToken:
+        $offset = 1;
+        if ($kindName === 'SwitchStatementNode') {
+          $offset = $this->indentOpts['SwitchCase'];
         }
+        $this->offsets->setDesiredOffsets([$token->start, $node->getEndPosition()], $token, null, $offset);
         break;
       }
     }
     if ($openBrace && $closeBrace) {
-      if ($this->isNewLineAfterToken($openBrace, $node)) {
-        $this->offsets->setDesiredOffsets([$openBrace->start + 1, $closeBrace->start], $openBrace);
+      $offset = 1;
+      if ($kindName === 'SwitchStatementNode') {
+        $offset = $this->indentOpts['SwitchCase'];
       }
+      $this->offsets->setDesiredOffsets([$openBrace->start + 1, $closeBrace->fullStart], $openBrace, $closeBrace, $offset);
     }
     if ($openParen && $closeParen) {
-      if ($this->isNewLineAfterToken($openParen, $node)) {
-        $this->offsets->setDesiredOffsets([$openParen->start + 1, $closeParen->start], $openParen);
-      }
+      $this->offsets->setDesiredOffsets([$openParen->start + 1, $closeParen->fullStart], $openParen, $closeParen);
     }
     if ($openBracket && $closeBracket) {
-      if ($this->isNewLineAfterToken($openBracket, $node)) {
-        $this->offsets->setDesiredOffsets([$openBracket->start + 1, $closeBracket->start], $openBracket);
-      }
+
+      $this->offsets->setDesiredOffsets([$openBracket->start + 1, $closeBracket->fullStart], $openBracket, $closeBracket);
     }
   }
 
   public function ProgramOnExit(&$node) {
     foreach ($node->getChildTokens() as $token) {
       $desiredIndent = $this->offsets->getDesiredIndent($token);
-      $text = $this->tokenInfo->getLeadingCommentAndWhitespaceText($token);
+      $text = $this->tokenInfo->getLeadingText($token);
       $lines = explode("\n", $text);
       $offset = 0;
       if (count($lines) > 1) {
@@ -309,6 +344,11 @@ class IndentRule extends Rule {
             $this->reportIndentError($token, $token->start + $offset, $expectedAmount, $indentText);
           }
           $offset += strlen($line) + 1;
+        }
+      }
+      if (defined('VERBOSE') && VERBOSE > 1) {
+        if ($token->kind === TokenKind::EndOfFileToken) {
+          print_r($this->offsets->offsetMap);
         }
       }
     }
