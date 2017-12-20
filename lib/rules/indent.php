@@ -235,6 +235,20 @@ class IndentRule extends Rule {
         $this->offsets->setDesiredOffsets([$token->start + 1, $node->getEndPosition() - 1], $token);
       }
       return;
+    case 'MemberAccessExpression':
+      $parent = $node;
+      do {
+        $parent = $parent->parent;
+        $parentKindName = $parent ? $parent->getNodeKindName() : '';
+      } while (in_array($parentKindName, ['MemberAccessExpression', 'CallExpression']));
+      if ($parentKindName === 'ExpressionStatement') {
+        // binary expression under expression statement
+        $token = $node->getChildTokens()->current();
+        if ($token) {
+          $this->offsets->setDesiredOffsets([$token->fullStart, $node->getEndPosition()], $token);
+        }
+      }
+      return;
     }
     // common
     $openBrace = null;
@@ -289,7 +303,6 @@ class IndentRule extends Rule {
       $this->offsets->setDesiredOffsets([$openParen->start + 1, $closeParen->fullStart], $openParen, $closeParen);
     }
     if ($openBracket && $closeBracket) {
-
       $this->offsets->setDesiredOffsets([$openBracket->start + 1, $closeBracket->fullStart], $openBracket, $closeBracket);
     }
   }
