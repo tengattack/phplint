@@ -215,6 +215,7 @@ class IndentRule extends Rule {
     $kindName = $node->getNodeKindName();
     switch ($kindName) {
     case 'BinaryExpression':
+    case 'TernaryExpression':
       $parent = $node;
       do {
         $parent = $parent->parent;
