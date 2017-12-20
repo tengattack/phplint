@@ -64,21 +64,20 @@ class OffsetStorage {
     $range[0] = $this->tokenInfo->getLine($range[0]) + 1;
     $range[1] = $this->tokenInfo->getLine($range[1]);
     if ($range[1] < $range[0]) {
-      // ignore same line
       return;
     }
-    $endLine = $endToken ? $this->tokenInfo->getLine($endToken->start) : 0;
 
     $newOffset = new OffsetLine($range[0], $range[1], $token, $this->indent, $offsetValue);
     foreach ($this->offsetMap as $i => &$offset) {
       if ($offset->start === $range[0] && $offset->end === $range[1]) {
         // replace
-        $this->offsetMap[$i] = $newOffset;
+        // $this->offsetMap[$i] = $newOffset;
         return;
       } elseif ($offset->start === $range[0] && $offset->end > $range[1]) {
         // insert to left
         $offset->start = $range[1] + 1;
         $newOffset->indent = $offset->indent;
+        $endLine = $endToken ? $this->tokenInfo->getLine($endToken->start) : 0;
         if ($endLine > $range[1]) {
           $offset->offset = 0;
         }
@@ -216,10 +215,17 @@ class IndentRule extends Rule {
     $kindName = $node->getNodeKindName();
     switch ($kindName) {
     case 'BinaryExpression':
-      $token = $node->getChildTokens()->current();
-      if ($token) {
-        // binary expression
-        $this->offsets->setDesiredOffsets([$token->start, $node->getEndPosition()], $token);
+      $parent = $node;
+      do {
+        $parent = $parent->parent;
+        $parentKindName = $parent ? $parent->getNodeKindName() : '';
+      } while ($parentKindName === $kindName);
+      if ($parentKindName === 'ExpressionStatement') {
+        // binary expression under expression statement
+        $token = $node->getChildTokens()->current();
+        if ($token) {
+          $this->offsets->setDesiredOffsets([$token->fullStart, $node->getEndPosition()], $token);
+        }
       }
       return;
     case 'StringLiteral':
@@ -260,14 +266,14 @@ class IndentRule extends Rule {
       case TokenKind::DoubleArrowToken:
       case TokenKind::ColonColonToken:
       case TokenKind::EqualsToken:
-        $this->offsets->setDesiredOffsets([$token->start, $node->getEndPosition()], $token);
+        $this->offsets->setDesiredOffsets([$token->fullStart, $node->getEndPosition()], $token);
         break;
       case TokenKind::ColonToken:
         $offset = 1;
         if ($kindName === 'SwitchStatementNode') {
           $offset = $this->indentOpts['SwitchCase'];
         }
-        $this->offsets->setDesiredOffsets([$token->start, $node->getEndPosition()], $token, null, $offset);
+        $this->offsets->setDesiredOffsets([$token->fullStart, $node->getEndPosition()], $token, null, $offset);
         break;
       }
     }
