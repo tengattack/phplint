@@ -143,7 +143,8 @@ class KeywordSpacingRule extends Rule {
       $tag = $this->getTokenText($token);
       if ($tag === '<?=') {
         // ensure `<?= $foo` has spaces inside
-        $nextToken = $this->getNextToken($this->context->current(), $token);
+        $currentNode = $this->context->current();
+        $nextToken = $this->getNextToken($currentNode, $token);
         if ($nextToken) {
           $hasSpace = $this->isSpaceBeforeToken($nextToken, $this->spacedAfter);
           if ($hasSpace && !$this->spacedAfter) {
