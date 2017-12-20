@@ -140,6 +140,20 @@ class Rule {
     return Rule::isSpace($text, true) && strpos($text, "\n") !== false;
   }
 
+  public function isNewLineBeforeToken(&$token): bool {
+    $text = $token->getLeadingCommentsAndWhitespaceText($this->context->astNode->fileContents);
+    return strpos($text, "\n") !== false;
+  }
+
+  public function isNewLineAfterToken(&$token, &$node): bool {
+    $nextToken = $this->getNextToken($node, $token);
+    if (!$nextToken) {
+      return false;
+    }
+    $text = $nextToken->getLeadingCommentsAndWhitespaceText($this->context->astNode->fileContents);
+    return strpos($text, "\n") !== false;
+  }
+
   public function parseSeverityAndOptions($data) {
     $level = 0;
     if (is_array($data)) {

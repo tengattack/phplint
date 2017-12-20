@@ -227,19 +227,28 @@ class IndentRule extends Rule {
         break;
       case TokenKind::ArrowToken:
       case TokenKind::DoubleArrowToken:
+      case TokenKind::ColonToken:
       case TokenKind::ColonColonToken:
-        $this->offsets->setDesiredOffsets([$token->start, $node->getEndPosition()], $token);
+        if ($this->isNewLineBeforeToken($token) || $this->isNewLineAfterToken($token, $node)) {
+          $this->offsets->setDesiredOffsets([$token->start, $node->getEndPosition()], $token);
+        }
         break;
       }
     }
     if ($openBrace && $closeBrace) {
-      $this->offsets->setDesiredOffsets([$openBrace->start + 1, $closeBrace->start], $openBrace);
+      if ($this->isNewLineAfterToken($openBrace, $node)) {
+        $this->offsets->setDesiredOffsets([$openBrace->start + 1, $closeBrace->start], $openBrace);
+      }
     }
     if ($openParen && $closeParen) {
-      $this->offsets->setDesiredOffsets([$openParen->start + 1, $closeParen->start], $openParen);
+      if ($this->isNewLineAfterToken($openParen, $node)) {
+        $this->offsets->setDesiredOffsets([$openParen->start + 1, $closeParen->start], $openParen);
+      }
     }
     if ($openBracket && $closeBracket) {
-      $this->offsets->setDesiredOffsets([$openBracket->start + 1, $closeBracket->start], $openBracket);
+      if ($this->isNewLineAfterToken($openBracket, $node)) {
+        $this->offsets->setDesiredOffsets([$openBracket->start + 1, $closeBracket->start], $openBracket);
+      }
     }
   }
 
