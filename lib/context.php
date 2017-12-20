@@ -8,9 +8,9 @@ use Microsoft\PhpParser\{Node, Token};
 
 class Context {
 
+  public $sourceCode;
   public $astNode;
   private $traverse;
-  private $sourceLineOffsets;
   private $rules;
   private $ruleObjects;
   private $enterSelectorsByNodeType;
@@ -25,8 +25,9 @@ class Context {
     return (new Selector())->parse($selectorName);
   }
 
-  function __construct(&$astNode) {
-    $this->astNode = $astNode;
+  function __construct(&$sourceCode) {
+    $this->sourceCode = $sourceCode;
+    $this->astNode = $sourceCode->astNode;
     unset($this->sourceLineOffsets);
   }
 
@@ -121,32 +122,6 @@ class Context {
     }
   }
 
-  public function positionToLocation(int $pos) {
-    if (!isset($this->sourceLineOffsets)) {
-      // generate source line offset caches
-      $lines = explode("\n", $this->astNode->fileContents);
-      $length = 0;
-      $this->sourceLineOffsets = [ $length ];
-      foreach ($lines as $line) {
-        $length += strlen($line) + 1;
-        $this->sourceLineOffsets []= $length;
-      }
-    }
-
-    $line = 0;
-    $column = 0;
-    $length = 0;
-    for ($i = 0; $i < count($this->sourceLineOffsets) - 1; $i++) {
-      $offset = $this->sourceLineOffsets[$i];
-      if ($pos >= $offset && $pos < $this->sourceLineOffsets[$i + 1]) {
-        $line = $i + 1;
-        $column = $pos - $offset + 1;
-        break;
-      }
-    }
-    return [ 'line' => $line, 'column' => $column ];
-  }
-
   public function parent() {
     return $this->traverse->parent();
   }
@@ -170,12 +145,12 @@ class Context {
         $pos = $node->start;
       }
     }
-    $loc = $this->positionToLocation($pos);
+    $loc = $this->sourceCode->getLocation($pos);
     $this->stats []= new Stat($ruleId, $severity, $node, $loc, $message, $data, $fix);
   }
 
   public function getReport(string $fileName) {
-    return new Report($fileName, $this, $this->stats);
+    return new Report($fileName, $this->sourceCode, $this->stats);
   }
 
 }

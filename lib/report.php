@@ -7,12 +7,12 @@ use Microsoft\PhpParser\{Node, Token};
 class Report {
 
   private $filePath;
-  private $context;
+  private $sourceCode;
   private $stats;
 
-  function __construct(string $filePath, &$context, &$stats) {
+  function __construct(string $filePath, &$sourceCode, &$stats) {
     $this->filePath = $filePath;
-    $this->context = $context;
+    $this->sourceCode = $sourceCode;
     $this->stats = $stats;
   }
 
@@ -24,7 +24,7 @@ class Report {
       if ($stat->node instanceof Node) {
         $sourceCode = $stat->node->getText();
       } else if ($stat->node instanceof Token) {
-        $sourceCode = $stat->node->getText($this->context->astNode->fileContents);
+        $sourceCode = $this->sourceCode->getTokenText($stat->node);
       }
 
       $messages []= [

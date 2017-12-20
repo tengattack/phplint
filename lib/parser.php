@@ -1,6 +1,7 @@
 <?php
 
 require_once ROOT . '/lib/context.php';
+require_once ROOT . '/lib/source-code.php';
 require_once ROOT . '/lib/traverse.php';
 
 use Microsoft\PhpParser\{DiagnosticsProvider, Parser};
@@ -15,10 +16,11 @@ function parseSourceCode(string &$source) {
 function processSource(string $source, &$rules, string $fileName = '') {
   $astNode = parseSourceCode($source);
 
-  $context = new Context($astNode);
+  $sourceCode = new SourceCode($astNode);
+  $context = new Context($sourceCode);
   $context->loadRules($rules);
 
-  $traverse = new Traverse($astNode);
+  $traverse = new Traverse($sourceCode);
   $traverse->walk($context);
 
   return $context->getReport($fileName);

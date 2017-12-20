@@ -3,14 +3,14 @@
 use Microsoft\PhpParser\{Token, Node};
 
 class Traverse {
-  private $astNode = null;
+  private $sourceCode = null;
   private $currentNode = null;
   private $parentNodes = [];
   private $depth = 0;
   private $context;
 
-  function __construct(&$astNode) {
-    $this->astNode = $astNode;
+  function __construct(&$sourceCode) {
+    $this->sourceCode = $sourceCode;
     $this->currentNode = null;
     $this->parentNodes = [];
     $this->depth = 0;
@@ -55,7 +55,7 @@ class Traverse {
         if (defined('VERBOSE') && VERBOSE) {
           echo str_repeat(' ', $this->depth * 2)
             . 'Token ' . Token::getTokenKindNameFromValue($child->kind)
-            . ' ' . json_encode($child->getFullText($this->astNode->fileContents))
+            . ' ' . json_encode($this->sourceCode->getTokenText($child))
             . "\n";
         }
         $this->context->applyTokenSelectors($child);
@@ -67,6 +67,6 @@ class Traverse {
   public function walk(&$context) {
     $this->context = $context;
     $this->context->setTraverse($this);
-    $this->walkNode($this->astNode);
+    $this->walkNode($this->sourceCode->astNode);
   }
 }
