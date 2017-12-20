@@ -24,7 +24,7 @@ function printUsage() {
     'Basic configuration:',
     '  -h, --help                     Show this help',
     '  -c, --config path::String      Use configuration from this file or shareable config',
-    '  --verbose                      Verbose mode',
+    '  --verbose [level=1]            Verbose mode',
     '',
     'Output:',
     '  -f, --format String            Use a specific output format - default: table',
@@ -48,7 +48,14 @@ for ($i = 1; $i < count($argv); $i++) {
     exit(0);
     break;
   case '--verbose':
-    define('VERBOSE', 1);
+    $verbose = 1;
+    if ($i < count($argv) - 1) {
+      if (is_numeric($argv[$i + 1])) {
+        $i++;
+        $verbose = (int)$argv[$i];
+      }
+    }
+    define('VERBOSE', $verbose);
     break;
   case '-f':
   case '--format':
