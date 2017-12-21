@@ -12,6 +12,7 @@ class SpaceInfixOpsRule extends Rule {
       'TernaryExpression',
       'AssignmentExpression',
       'ArrayElement',
+      'Parameter',
     ];
   }
 
@@ -23,7 +24,7 @@ class SpaceInfixOpsRule extends Rule {
         if (!$this->isSpaceBeforeToken($child, true)) {
           $this->report($node, $child->fullStart, SpaceInfixOpsRule::$MESSAGE);
         }
-      } else if ($child instanceof Node) {
+      } elseif ($child instanceof Node) {
         if (!$start) {
           continue;
         }
@@ -54,7 +55,7 @@ class SpaceInfixOpsRule extends Rule {
           $this->report($node, $child->fullStart, SpaceInfixOpsRule::$MESSAGE);
         }
         $lastNode = null;
-      } else if ($child instanceof Node) {
+      } elseif ($child instanceof Node) {
         $lastNode = $child;
         if (!$start) {
           continue;
@@ -73,6 +74,30 @@ class SpaceInfixOpsRule extends Rule {
   public function ArrayElement(&$node) {
     // only work for DoubleArrowToken
     return $this->check($node);
+  }
+
+  public function Parameter(&$node) {
+    $start = false;
+    foreach ($node->getChildNodesAndTokens() as $child) {
+      if ($child instanceof Token) {
+        if (!$start && $child->kind !== TokenKind::VariableName) {
+          // starts from variable name
+          // skip keyword, splat operator and etc.
+          continue;
+        }
+        if ($start && !$this->isSpaceBeforeToken($child, true)) {
+          $this->report($node, $child->fullStart, SpaceInfixOpsRule::$MESSAGE);
+        }
+        $start = true;
+      } elseif ($child instanceof Node) {
+        if (!$start) {
+          continue;
+        }
+        if (!$this->isSpaceBeforeNode($child, true)) {
+          $this->report($node, $child->getFullStart(), SpaceInfixOpsRule::$MESSAGE);
+        }
+      }
+    }
   }
 
 }
