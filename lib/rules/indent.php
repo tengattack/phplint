@@ -76,10 +76,12 @@ class OffsetStorage {
       } elseif ($offset->start === $range[0] && $offset->end > $range[1]) {
         // insert to left
         $offset->start = $range[1] + 1;
-        $newOffset->indent = $offset->indent;
         $endLine = $endToken ? $this->tokenInfo->getLine($endToken->start) : 0;
-        if ($endLine > $range[1]) {
+        if ($offset->end === $endLine) {
+          $newOffset->indent = $offset->indent;
           $offset->offset = 0;
+        } else {
+          $newOffset->indent = $offset->indent + $offset->offset;
         }
         array_splice($this->offsetMap, $i, 0, [ $newOffset ]);
         return;
