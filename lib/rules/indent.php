@@ -237,6 +237,12 @@ class IndentRule extends Rule {
         $this->offsets->setDesiredOffsets([$token->start + 1, $node->getEndPosition() - 1], $token);
       }
       return;
+    case 'ReturnStatement':
+      $token = $node->getChildTokens()->current();
+      if ($token) {
+        $this->offsets->setDesiredOffsets([$token->start, $node->getEndPosition()], $token);
+      }
+      return;
     case 'MemberAccessExpression':
       $parent = $node;
       do {
