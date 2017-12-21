@@ -238,6 +238,7 @@ class IndentRule extends Rule {
       }
       return;
     case 'ReturnStatement':
+    case 'CaseStatementNode':
       $token = $node->getChildTokens()->current();
       if ($token) {
         $this->offsets->setDesiredOffsets([$token->start, $node->getEndPosition()], $token);
