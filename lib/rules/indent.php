@@ -133,7 +133,7 @@ class IndentRule extends Rule {
   private $indentType = 'space';
   private $indentSize = 4;
   private $indentOpts = [
-    'SwitchCase' => 0,
+    'SwitchCase' => 1,
   ];
   private $offsets;
   private $tokenInfo;
