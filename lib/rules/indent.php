@@ -302,7 +302,11 @@ class IndentRule extends Rule {
       $this->offsets->setDesiredOffsets([$openBrace->start + 1, $closeBrace->fullStart], $openBrace, $closeBrace, $offset);
     }
     if ($openParen && $closeParen) {
-      $this->offsets->setDesiredOffsets([$openParen->start + 1, $closeParen->fullStart], $openParen, $closeParen);
+      $offset = 1;
+      if (strpos($kindName, 'Statement') !== false) {
+        $offset = 2;
+      }
+      $this->offsets->setDesiredOffsets([$openParen->start + 1, $closeParen->fullStart], $openParen, $closeParen, $offset);
     }
     if ($openBracket && $closeBracket) {
       $this->offsets->setDesiredOffsets([$openBracket->start + 1, $closeBracket->fullStart], $openBracket, $closeBracket);
