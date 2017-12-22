@@ -138,6 +138,23 @@ class IndentRule extends Rule {
   private $offsets;
   private $tokenInfo;
 
+  static $EndSectionKeywords = [
+    TokenKind::EndDeclareKeyword,
+    TokenKind::EndForKeyword,
+    TokenKind::EndForEachKeyword,
+    TokenKind::EndIfKeyword,
+    TokenKind::EndSwitchKeyword,
+    TokenKind::EndWhileKeyword
+  ];
+
+  static $OneLineStatements = [
+    'ForStatement',
+    'ForeachStatement',
+    'IfStatementNode',
+    'WhileStatement',
+    'DoStatement',
+  ];
+
   protected function makeOptions() {
     if (!empty($this->options)) {
       $opt = $this->options[0];
@@ -244,6 +261,15 @@ class IndentRule extends Rule {
         $this->offsets->setDesiredOffsets([$token->start, $node->getEndPosition()], $token);
       }
       return;
+    case 'ExpressionStatement':
+      $parentKindName = $node->parent ? $node->parent->getNodeKindName() : '';
+      if (in_array($parentKindName, self::$OneLineStatements)) {
+        $token = $node->getDescendantTokens()->current();
+        if ($token) {
+          $this->offsets->setDesiredOffsets([$token->fullStart, $node->getEndPosition()], $token);
+        }
+      }
+      return;
     case 'MemberAccessExpression':
       $parent = $node;
       do {
@@ -251,7 +277,7 @@ class IndentRule extends Rule {
         $parentKindName = $parent ? $parent->getNodeKindName() : '';
       } while (in_array($parentKindName, ['MemberAccessExpression', 'CallExpression']));
       if ($parentKindName === 'ExpressionStatement') {
-        // binary expression under expression statement
+        // member access expression under expression statement
         $token = $node->getChildTokens()->current();
         if ($token) {
           $this->offsets->setDesiredOffsets([$token->fullStart, $node->getEndPosition()], $token);
@@ -294,10 +320,20 @@ class IndentRule extends Rule {
         break;
       case TokenKind::ColonToken:
         $offset = 1;
+        $endPosition = $node->getEndPosition();
+        $endToken = null;
         if ($kindName === 'SwitchStatementNode') {
           $offset = $this->indentOpts['SwitchCase'];
         }
-        $this->offsets->setDesiredOffsets([$token->fullStart, $node->getEndPosition()], $token, null, $offset);
+        foreach ($node->getChildTokens() as $subToken) {
+          // until end keywords
+          if (in_array($subToken->kind, self::$EndSectionKeywords)) {
+            $endPosition = $subToken->start - 1;
+            $endToken = $subToken;
+            break;
+          }
+        }
+        $this->offsets->setDesiredOffsets([$token->fullStart, $endPosition], $token, $endToken, $offset);
         break;
       }
     }
