@@ -382,10 +382,12 @@ class IndentRule extends Rule {
               $offset += strlen($line) + 1;
               continue;
             }
-            $indentText = $matches[1];
-            $expectedAmount = $desiredIndent * $this->indentSize + ($inDocComment ? 1 : 0);
-            if (strlen($indentText) !== $expectedAmount) {
-              $this->reportIndentError($token, $token->fullStart + $offset, $expectedAmount, $indentText);
+            if ($i > 0) {
+              $indentText = $matches[1];
+              $expectedAmount = $desiredIndent * $this->indentSize + ($inDocComment ? 1 : 0);
+              if (strlen($indentText) !== $expectedAmount) {
+                $this->reportIndentError($token, $token->fullStart + $offset, $expectedAmount, $indentText);
+              }
             }
             if (substr($matches[2], 0, 3) === '/**') {
               $inDocComment = true;
