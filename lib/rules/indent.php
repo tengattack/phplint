@@ -67,7 +67,7 @@ class OffsetStorage {
       return;
     }
 
-    $newOffset = new OffsetLine($range[0], $range[1], $token, $this->indent, $offsetValue);
+    $newOffset = new OffsetLine($range[0], $range[1], $token, 0, $offsetValue);
     foreach ($this->offsetMap as $i => &$offset) {
       if ($offset->start === $range[0] && $offset->end === $range[1]) {
         // replace
@@ -116,10 +116,10 @@ class OffsetStorage {
     $line = $this->tokenInfo->getLine($position);
     foreach ($this->offsetMap as $offset) {
       if ($offset->start <= $line && $offset->end >= $line) {
-        return $offset->getIndent();
+        return $this->indent + $offset->getIndent();
       }
     }
-    return 0;
+    return $this->indent;
   }
 
   public function getDesiredIndent(&$token) {
@@ -233,6 +233,8 @@ class IndentRule extends Rule {
   public function Program(&$node) {
     $kindName = $node->getNodeKindName();
     switch ($kindName) {
+    case 'InlineHtml':
+      return;
     case 'BinaryExpression':
     case 'TernaryExpression':
       $parent = $node;
@@ -358,6 +360,11 @@ class IndentRule extends Rule {
 
   public function ProgramOnExit(&$node) {
     foreach ($node->getChildTokens() as $token) {
+      if ($token->kind === TokenKind::ScriptSectionStartTag) {
+        // realign indent
+        $loc = $this->context->sourceCode->getLocation($token->start);
+        $this->offsets->indent = (int)($loc['column'] / $this->indentSize);
+      }
       $desiredIndent = $this->offsets->getDesiredIndent($token);
       $text = $this->tokenInfo->getLeadingText($token);
       $lines = explode("\n", $text);
@@ -385,12 +392,15 @@ class IndentRule extends Rule {
           $offset += strlen($line) + 1;
         }
       }
-      if ($token->kind === TokenKind::StringLiteralToken) {
+      if ($token->kind === TokenKind::ScriptSectionEndTag) {
+        // reset indent
+        $this->offsets->indent = 0;
+      } elseif ($token->kind === TokenKind::StringLiteralToken) {
         $text = $this->getTokenText($token);
         $lines = explode("\n", $text);
         $offset = 0;
         if (count($lines) <= 1) {
-          return;
+          continue;
         }
         for ($i = 0; $i < count($lines); $i++) {
           $line = $lines[$i];
