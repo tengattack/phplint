@@ -322,11 +322,15 @@ class IndentRule extends Rule {
         break;
       case TokenKind::ColonToken:
         $offset = 1;
-        $endPosition = $node->getEndPosition();
-        $endToken = null;
-        if ($kindName === 'SwitchStatementNode') {
+        if (in_array($kindName, ['FunctionDeclaration', 'MethodDeclaration'])) {
+          // defined function return type
+          // do need to handle
+          break;
+        } elseif ($kindName === 'SwitchStatementNode') {
           $offset = $this->indentOpts['SwitchCase'];
         }
+        $endPosition = $node->getEndPosition();
+        $endToken = null;
         foreach ($node->getChildTokens() as $subToken) {
           // until end keywords
           if (in_array($subToken->kind, self::$EndSectionKeywords)) {
