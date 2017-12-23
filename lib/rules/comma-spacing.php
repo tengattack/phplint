@@ -24,6 +24,7 @@ class CommaSpacingRule extends Rule {
       'ArrayElementList',
       'ParameterDeclarationList',
       'ArgumentExpressionList',
+      'UseVariableNameList',
     ];
   }
 
@@ -88,6 +89,10 @@ class CommaSpacingRule extends Rule {
   }
 
   public function ArgumentExpressionList(&$node) {
+    $this->check($node);
+  }
+
+  public function UseVariableNameList(&$node) {
     $this->check($node);
   }
 
