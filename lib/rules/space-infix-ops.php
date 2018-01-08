@@ -16,13 +16,16 @@ class SpaceInfixOpsRule extends Rule {
     ];
   }
 
-  public function check(&$node) {
+  public function check(&$node, $ignoreStartAfter = false) {
     $start = false;
     foreach ($node->getChildNodesAndTokens() as $child) {
       if ($child instanceof Token) {
         $start = true;
         if (!$this->isSpaceBeforeToken($child, true)) {
           $this->report($node, $child->fullStart, SpaceInfixOpsRule::$MESSAGE);
+        }
+        if ($ignoreStartAfter && $child->kind === TokenKind::AmpersandToken) {
+          $start = false;
         }
       } elseif ($child instanceof Node) {
         if (!$start) {
@@ -68,7 +71,7 @@ class SpaceInfixOpsRule extends Rule {
   }
 
   public function AssignmentExpression(&$node) {
-    return $this->check($node);
+    return $this->check($node, true);
   }
 
   public function ArrayElement(&$node) {
