@@ -28,5 +28,5 @@ rules:
   control-colon-spacing: [ "error", { "before": false, "after": true } ]
   no-mixed-spaces-and-tabs: "error"
   no-trailing-spaces: "error"
-  no-magic-numbers: [ "error", { "ignore": [0, 1, 200], "ignoreArrayIndexes": true, "enforceConst": true, detectObjects: false } ]
+  no-magic-numbers: [ "error", { "ignore": [0, 1, 200, 1000], "ignoreArrayIndexes": true, "enforceConst": true, detectObjects: false } ]
   indent: ["error", 4, {"SwitchCase": 1}]
