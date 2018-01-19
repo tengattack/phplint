@@ -62,7 +62,7 @@ class OffsetStorage {
 
     // next line of start position
     $range[0] = $this->tokenInfo->getLine($range[0]) + 1;
-    $range[1] = $this->tokenInfo->getLine($range[1]);
+    $range[1] = $this->tokenInfo->getLine($range[1]) - (count($range) > 2 ? $range[2] : 0);
     if ($range[1] < $range[0]) {
       return;
     }
@@ -71,7 +71,8 @@ class OffsetStorage {
     foreach ($this->offsetMap as $i => &$offset) {
       if ($offset->start === $range[0] && $offset->end === $range[1]) {
         // replace
-        // $this->offsetMap[$i] = $newOffset;
+        $newOffset->indent = $offset->indent;
+        $this->offsetMap[$i] = $newOffset;
         return;
       } elseif ($offset->start === $range[0] && $offset->end > $range[1]) {
         // insert to left
@@ -268,7 +269,7 @@ class IndentRule extends Rule {
       if (in_array($parentKindName, self::$OneLineStatements)) {
         $token = $node->getDescendantTokens()->current();
         if ($token) {
-          $this->offsets->setDesiredOffsets([$token->fullStart, $node->getEndPosition()], $token);
+          $this->offsets->setDesiredOffsets([$token->start, $node->getEndPosition()], $token);
         }
       }
       return;
@@ -348,7 +349,9 @@ class IndentRule extends Rule {
       if ($kindName === 'SwitchStatementNode') {
         $offset = $this->indentOpts['SwitchCase'];
       }
-      $this->offsets->setDesiredOffsets([$openBrace->start + 1, $closeBrace->fullStart], $openBrace, $closeBrace, $offset);
+      $parentKindName = $node->parent ? $node->parent->getNodeKindName() : '';
+      $mergeBlock = !in_array($parentKindName, self::$OneLineStatements);
+      $this->offsets->setDesiredOffsets([$openBrace->start + 1, $closeBrace->start, 1], $openBrace, $mergeBlock ? $closeBrace : null, $offset);
     }
     if ($openParen && $closeParen) {
       $offset = 1;
@@ -384,6 +387,10 @@ class IndentRule extends Rule {
             }
             if ($i > 0) {
               $indentText = $matches[1];
+              if ($token->kind === TokenKind::CloseBraceToken) {
+                // it may have different indent before close brace token
+                $desiredIndent = $this->offsets->getDesiredIndentByPosition($token->fullStart + $offset);
+              }
               $expectedAmount = $desiredIndent * $this->indentSize + ($inDocComment ? 1 : 0);
               if (strlen($indentText) !== $expectedAmount) {
                 $this->reportIndentError($token, $token->fullStart + $offset, $expectedAmount, $indentText);
