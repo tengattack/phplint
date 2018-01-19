@@ -20,12 +20,16 @@ class SpaceInfixOpsRule extends Rule {
     $start = false;
     foreach ($node->getChildNodesAndTokens() as $child) {
       if ($child instanceof Token) {
-        $start = true;
+        if ($ignoreStartAfter && $child->kind === TokenKind::AmpersandToken) {
+          if (!$start) {
+            continue;
+          }
+          $start = false;
+        } else {
+          $start = true;
+        }
         if (!$this->isSpaceBeforeToken($child, true)) {
           $this->report($node, $child->fullStart, SpaceInfixOpsRule::$MESSAGE);
-        }
-        if ($ignoreStartAfter && $child->kind === TokenKind::AmpersandToken) {
-          $start = false;
         }
       } elseif ($child instanceof Node) {
         if (!$start) {
@@ -75,8 +79,8 @@ class SpaceInfixOpsRule extends Rule {
   }
 
   public function ArrayElement(&$node) {
-    // only work for DoubleArrowToken
-    return $this->check($node);
+    // works for DoubleArrowToken
+    return $this->check($node, true);
   }
 
   public function Parameter(&$node) {
