@@ -29,4 +29,5 @@ rules:
   no-mixed-spaces-and-tabs: "error"
   no-trailing-spaces: "error"
   no-magic-numbers: [ "error", { "ignore": [0, 1, 200, 1000], "ignoreArrayIndexes": true, "enforceConst": true, detectObjects: false } ]
-  indent: ["error", 4, {"SwitchCase": 1}]
+  indent: ["error", 4, { "SwitchCase": 1 }]
+  max-len: ["error", { "code": 80, "tabWidth": 4 }]

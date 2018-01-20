@@ -17,7 +17,14 @@ class SourceCode {
     return $token->getLeadingCommentsAndWhitespaceText($this->astNode->fileContents);
   }
 
-  public function getLocation(int $pos) {
+  public function getSource(int $start, $length = null) {
+    if (is_null($length)) {
+      return substr($this->astNode->fileContents, $start);
+    }
+    return substr($this->astNode->fileContents, $start, $length);
+  }
+
+  public function getLineOffsets() {
     if (!isset($this->sourceLineOffsets)) {
       // generate source line offset caches
       $lines = explode("\n", $this->astNode->fileContents);
@@ -27,6 +34,13 @@ class SourceCode {
         $length += strlen($line) + 1;
         $this->sourceLineOffsets []= $length;
       }
+    }
+    return $this->sourceLineOffsets;
+  }
+
+  public function getLocation(int $pos) {
+    if (!isset($this->sourceLineOffsets)) {
+      $this->getLineOffsets();
     }
 
     $line = 0;
