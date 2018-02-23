@@ -11,6 +11,7 @@ class SpaceInfixOpsRule extends Rule {
       'BinaryExpression',
       'TernaryExpression',
       'AssignmentExpression',
+      'CastExpression',
       'ArrayElement',
       'Parameter',
     ];
@@ -76,6 +77,16 @@ class SpaceInfixOpsRule extends Rule {
 
   public function AssignmentExpression(&$node) {
     return $this->check($node, true);
+  }
+
+  public function CastExpression(&$node) {
+    $child = $node->getChildNodes()->current();
+    if ($child) {
+      // the first node (only one)
+      if (!$this->isSpaceBeforeNode($child, true)) {
+        $this->report($node, $child->getFullStart(), SpaceInfixOpsRule::$MESSAGE);
+      }
+    }
   }
 
   public function ArrayElement(&$node) {
