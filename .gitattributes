@@ -1,2 +1,5 @@
+.git* text eol=lf
+*.php text eol=lf
 *.json text eol=lf
 *.lock text eol=lf
+*.yml text eol=lf

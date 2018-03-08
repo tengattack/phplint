@@ -32,3 +32,4 @@ rules:
   no-magic-numbers: [ "error", { "ignore": [0, 1, 200, 1000], "ignoreArrayIndexes": true, "enforceConst": true, detectObjects: false } ]
   indent: ["error", 4, { "SwitchCase": 1 }]
   max-len: ["error", { "code": 120, "tabWidth": 4 }]
+  eol-last: ["error", "always"]
