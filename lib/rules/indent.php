@@ -135,6 +135,10 @@ class IndentRule extends Rule {
   private $indentSize = 4;
   private $indentOpts = [
     'SwitchCase' => 1,
+    'FunctionDeclaration' => [
+      'parameters' => 2,
+    ],
+    'Condition' => 2,
   ];
   private $offsets;
   private $tokenInfo;
@@ -170,7 +174,14 @@ class IndentRule extends Rule {
       if (is_array($opt)) {
         foreach ($this->indentOpts as $key => $_) {
           if (array_key_exists($key, $opt)) {
-            $this->indentOpts[$key] = (int)$opt[$key];
+            if (is_array($this->indentOpts[$key])) {
+              foreach ($this->indentOpts[$key] as $subkey => $_) {
+                if (array_key_exists($subkey, $opt[$key]))
+                $this->indentOpts[$key][$subkey] = (int)$opt[$key][$subkey];
+              }
+            } else {
+              $this->indentOpts[$key] = (int)$opt[$key];
+            }
           }
         }
       }
@@ -287,6 +298,13 @@ class IndentRule extends Rule {
         }
       }
       return;
+    case 'ParameterDeclarationList':
+      $token = $node->getDescendantTokens()->current();
+      if ($token) {
+        $offset = $this->indentOpts['FunctionDeclaration']['parameters'];
+        $this->offsets->setDesiredOffsets([$node->getFullStart(), $node->getEndPosition()], $token, null, $offset);
+      }
+      return;
     }
     // common
     $openBrace = null;
@@ -356,7 +374,7 @@ class IndentRule extends Rule {
     if ($openParen && $closeParen) {
       $offset = 1;
       if (strpos($kindName, 'Statement') !== false) {
-        $offset = 2;
+        $offset = $this->indentOpts['Condition'];
       }
       $this->offsets->setDesiredOffsets([$openParen->start + 1, $closeParen->fullStart], $openParen, $closeParen, $offset);
     }
