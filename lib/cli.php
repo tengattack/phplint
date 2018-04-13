@@ -39,7 +39,8 @@ if (count($argv) < 2) {
 
 $fileName = '';
 $formatter = 'table';
-$configFile = ROOT . '/phplint.yml';
+$configFile = '.phplint.yml';
+$userConfigFile = false;
 for ($i = 1; $i < count($argv); $i++) {
   switch ($argv[$i]) {
   case '-h':
@@ -71,6 +72,7 @@ for ($i = 1; $i < count($argv); $i++) {
     if ($i < count($argv) - 1) {
       $i++;
       $configFile = $argv[$i];
+      $userConfigFile = true;
     } else {
       errorAndExit('Missing config file');
     }
@@ -84,7 +86,13 @@ if (!$fileName) {
 }
 
 if (!file_exists($configFile)) {
-  errorAndExit('Config file not exists');
+  if ($userConfigFile) {
+    errorAndExit('Config file not exists');
+  }
+  $configFile = ROOT . '/.phplint.yml';
+  if (!file_exists($configFile)) {
+    errorAndExit('Default config file not exists');
+  }
 }
 if (!file_exists($fileName)) {
   errorAndExit('Target file not exists');

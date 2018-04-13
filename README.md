@@ -17,6 +17,13 @@ $ export PATH=$PATH:~/.composer/vendor/bin
 $ phplint /path/to/phpfile
 ```
 
+### Configuration
+
+If no configuration file is specified, it will first read the file `.phplint.yml` on current working directory as configuration,
+and if still not exists it will use the default configuration.
+
+You can configure it as you want base on this file: [`.phplint.yml`](./.phplint.yml).
+
 ### Example
 
 A php file `test.php` with following content:
