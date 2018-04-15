@@ -59,11 +59,11 @@ class HTMLRule extends Rule {
       if ($htmlPos > $length) {
         $pos = $mask['start'] + $htmlPos - $length;
       } else {
-        return $pos;
+        break;
       }
       $length += $mask['end'] - $mask['start'];
     }
-    return $length;
+    return $pos;
   }
 
   private function checkStyle() {
