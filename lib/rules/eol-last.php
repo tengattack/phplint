@@ -20,7 +20,15 @@ class EOLLastRule extends Rule {
   }
 
   public function EndOfFileToken(&$token) {
-    $hasNewLine = $this->isNewLineBeforeToken($token);
+    $text = $this->getTokenText($token);
+    if ($text === '') {
+      $node = $this->context->current();
+      $prevToken = $this->getPreviousToken($node, $token);
+      $text = $this->getTokenText($prevToken);
+      $hasNewLine = substr($text, -1, 1) === "\n";
+    } else {
+      $hasNewLine = $this->isNewLineBeforeToken($token);
+    }
     if ($hasNewLine && !$this->enforced) {
       $this->report($token, $token->fullStart, EOLLastRule::$UNEXPECTED_MESSAGE);
     } elseif (!$hasNewLine && $this->enforced) {
