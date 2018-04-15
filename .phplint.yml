@@ -33,4 +33,4 @@ rules:
   indent: ["error", 4, { "SwitchCase": 1, "FunctionDeclaration": { "parameters": 2 }, 'Condition': 2 }]
   max-len: ["error", { "code": 120, "tabWidth": 4 }]
   eol-last: ["error", "always"]
-  html: ["error", { "eatNewLine": false }]
+  html: ["error", { "eatNewLine": false, "styleIndent": 2 }]

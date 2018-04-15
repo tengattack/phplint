@@ -76,4 +76,8 @@ class SourceCode {
     return $lineStartIndices[$loc['line'] - 1] + $loc['column'] - 1;
   }
 
+  public static function isWhiteSpaces($str) {
+    return preg_match('/^\s+$/', $str, $matches);
+  }
+
 }
