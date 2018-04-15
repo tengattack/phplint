@@ -20,7 +20,7 @@ class EOLLastRule extends Rule {
   }
 
   public function EndOfFileToken(&$token) {
-    $text = $this->getTokenText($token);
+    $text = $this->context->sourceCode->getTokenFullText($token);
     if ($text === '') {
       $node = $this->context->current();
       $prevToken = $this->getPreviousToken($node, $token);

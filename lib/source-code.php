@@ -15,6 +15,10 @@ class SourceCode {
     return $token->getText($this->astNode->fileContents);
   }
 
+  public function getTokenFullText(&$token) {
+    return $token->getFullText($this->astNode->fileContents);
+  }
+
   public function getLeadingText(&$token) {
     return $token->getLeadingCommentsAndWhitespaceText($this->astNode->fileContents);
   }
