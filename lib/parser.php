@@ -16,7 +16,7 @@ function parseSourceCode(string &$source) {
 function processSource(string $source, &$rules, string $fileName = '') {
   $astNode = parseSourceCode($source);
 
-  $sourceCode = new SourceCode($astNode);
+  $sourceCode = new SourceCode($astNode, $fileName);
   $context = new Context($sourceCode);
   $context->loadRules($rules);
 

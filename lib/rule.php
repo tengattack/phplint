@@ -4,6 +4,8 @@ use Microsoft\PhpParser\Token;
 
 class Rule {
 
+  public $enabled;
+
   protected $context;
   protected $id;
   protected $severity;
@@ -45,6 +47,7 @@ class Rule {
   }
 
   function __construct(&$context, string $id, $data) {
+    $this->enabled = true;
     $this->context = $context;
     $this->id = $id;
     $this->parseSeverityAndOptions($data);
@@ -179,7 +182,7 @@ class Rule {
 
   protected function makeOptions() { }
 
-  public function report(&$node, $pos = null, $message = null, $data = null, $fix = null) {
+  public function report($node, $pos = null, $message = null, $data = null, $fix = null) {
     // $pos starts from 0
     $this->context->report($this->id, $this->severity,
       $node, $pos, $message, $data, $fix);

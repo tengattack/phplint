@@ -3,10 +3,12 @@
 class SourceCode {
 
   public $astNode;
+  public $filePath;
   private $sourceLineOffsets;
 
-  function __construct($astNode) {
+  function __construct($astNode, $filePath) {
     $this->astNode = $astNode;
+    $this->filePath = $filePath;
   }
 
   public function getTokenText(&$token) {
@@ -27,13 +29,7 @@ class SourceCode {
   public function getLineOffsets() {
     if (!isset($this->sourceLineOffsets)) {
       // generate source line offset caches
-      $lines = explode("\n", $this->astNode->fileContents);
-      $length = 0;
-      $this->sourceLineOffsets = [ $length ];
-      foreach ($lines as $line) {
-        $length += strlen($line) + 1;
-        $this->sourceLineOffsets []= $length;
-      }
+      $this->sourceLineOffsets = self::getSourceLineStartIndices($this->astNode->fileContents);
     }
     return $this->sourceLineOffsets;
   }
@@ -43,18 +39,37 @@ class SourceCode {
       $this->getLineOffsets();
     }
 
+    return self::getSourceLocation($pos, $this->sourceLineOffsets);
+  }
+
+  public static function getSourceLineStartIndices(string $source) {
+    $lines = explode("\n", $source);
+    $length = 0;
+    $lineStartIndices = [ $length ];
+    foreach ($lines as $line) {
+      $length += strlen($line) + 1;
+      $lineStartIndices []= $length;
+    }
+    return $lineStartIndices;
+  }
+
+  public static function getSourceLocation(int $pos, array $lineStartIndices) {
     $line = 0;
     $column = 0;
     $length = 0;
-    for ($i = 0; $i < count($this->sourceLineOffsets) - 1; $i++) {
-      $offset = $this->sourceLineOffsets[$i];
-      if ($pos >= $offset && $pos < $this->sourceLineOffsets[$i + 1]) {
+    for ($i = 0; $i < count($lineStartIndices) - 1; $i++) {
+      $offset = $lineStartIndices[$i];
+      if ($pos >= $offset && $pos < $lineStartIndices[$i + 1]) {
         $line = $i + 1;
         $column = $pos - $offset + 1;
         break;
       }
     }
     return [ 'line' => $line, 'column' => $column ];
+  }
+
+  public static function getSourcePosition($loc, array $lineStartIndices) {
+    return $lineStartIndices[$loc['line'] - 1] + $loc['column'] - 1;
   }
 
 }

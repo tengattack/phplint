@@ -86,6 +86,9 @@ class Context {
     if (array_key_exists($type, $this->tokenSelectors)) {
       $selectors = $this->tokenSelectors[$type];
       foreach ($selectors as &$rule) {
+        if (!$rule->enabled) {
+          continue;
+        }
         $rule->$type($token);
       }
     }
@@ -95,6 +98,9 @@ class Context {
       if (array_key_exists($tokenType, $this->anyTokenSelectors)) {
         $selectors = $this->anyTokenSelectors[$tokenType];
         foreach ($selectors as &$rule) {
+          if (!$rule->enabled) {
+            continue;
+          }
           $rule->$tokenType($token);
         }
       }
@@ -110,6 +116,9 @@ class Context {
       $selectors = $this->$selectorList[$type];
       $selectorCall = $type . ($isExit ? 'OnExit' : '');
       foreach ($selectors as &$rule) {
+        if (!$rule->enabled) {
+          continue;
+        }
         $rule->$selectorCall($node);
       }
     }
@@ -118,6 +127,9 @@ class Context {
                          : 'anyTypeEnterSelectors';
     $anyCall = 'Program' . ($isExit ? 'OnExit' : '');
     foreach ($this->$anyTypeSelectorList as &$rule) {
+      if (!$rule->enabled) {
+        continue;
+      }
       $rule->$anyCall($node);
     }
   }
@@ -130,9 +142,9 @@ class Context {
     return $this->traverse->current();
   }
 
-  public function report(string $ruleId, int $severity, &$node, $pos, $message, $data, $fix) {
+  public function report(string $ruleId, int $severity, $node, $pos, $message, $data = null, $fix = null) {
     if (gettype($pos) === 'string') {
-      // [ &$node, $message, $data, $fix ]
+      // [ $node, $message, $data, $fix ]
       $fix = $data;
       $data = $message;
       $message = $pos;

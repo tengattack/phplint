@@ -8,6 +8,8 @@ A configurable linter tool for PHP.
 
 ```sh
 $ composer global require tengattack/phplint
+$ # htmllint is used by rule `html`
+$ npm i -g tengattack/htmllint-cli
 ```
 
 ### Run
