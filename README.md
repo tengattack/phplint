@@ -4,12 +4,19 @@ A configurable linter tool for PHP.
 
 ## Introduction
 
+### Dependencies
+
+* [htmllint-cli](https://github.com/tengattack/htmllint-cli)
+* [scss-lint](https://github.com/brigade/scss-lint)
+
 ### Installation
 
 ```sh
 $ composer global require tengattack/phplint
 $ # htmllint is used by rule `html`
 $ npm i -g tengattack/htmllint-cli
+$ # scss-lint is used by rule `html`
+$ gem install scss_lint
 ```
 
 ### Run

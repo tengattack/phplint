@@ -266,7 +266,7 @@ class HTMLRule extends Rule {
     }
 
     $data = json_decode($result, true);
-    if (!$data) {
+    if (!$data && $ret !== 0) {
       throw new Exception("{$program} error:\n{$result}");
     }
 
