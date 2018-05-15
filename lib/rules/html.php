@@ -144,7 +144,7 @@ class HTMLRule extends Rule {
           $pos += $lineLength + 1;
         }
         if ($i >= 1) {
-          if (!SourceCode::isWhiteSpaces($lines[$i])) {
+          if ($lines[$i] && !SourceCode::isWhiteSpaces($lines[$i])) {
             // report
             $indentStr = substr($lines[$i], 0, $baseIndent + $styleIndent);
             $lineStart = $this->checkStyleIndent(
