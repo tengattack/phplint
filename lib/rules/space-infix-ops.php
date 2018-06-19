@@ -12,6 +12,7 @@ class SpaceInfixOpsRule extends Rule {
       'TernaryExpression',
       'AssignmentExpression',
       'ArrayElement',
+      'ConstElement',
       'Parameter',
     ];
   }
@@ -80,6 +81,10 @@ class SpaceInfixOpsRule extends Rule {
 
   public function ArrayElement(&$node) {
     // works for DoubleArrowToken
+    return $this->check($node, true);
+  }
+
+  public function ConstElement(&$node) {
     return $this->check($node, true);
   }
 
