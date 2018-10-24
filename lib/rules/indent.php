@@ -373,7 +373,7 @@ class IndentRule extends Rule {
     }
     if ($openParen && $closeParen) {
       $offset = 1;
-      if (strpos($kindName, 'Statement') !== false) {
+      if (strpos($kindName, 'Statement') !== false || $kindName === 'ElseIfClauseNode') {
         $offset = $this->indentOpts['Condition'];
       }
       $this->offsets->setDesiredOffsets([$openParen->start + 1, $closeParen->fullStart], $openParen, $closeParen, $offset);
