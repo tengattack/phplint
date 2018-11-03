@@ -13,6 +13,8 @@ class SpaceInfixOpsRule extends Rule {
       'AssignmentExpression',
       'ArrayElement',
       'ConstElement',
+      'ForeachKey',
+      'ForeachValue',
       'Parameter',
     ];
   }
@@ -86,6 +88,16 @@ class SpaceInfixOpsRule extends Rule {
 
   public function ConstElement(&$node) {
     return $this->check($node, true);
+  }
+
+  public function ForeachKey(&$node) {
+    return $this->check($node, true);
+  }
+
+  public function ForeachValue(&$node) {
+    if (!$this->isSpaceBeforeNode($node, true)) {
+      $this->report($node, $node->getFullStart(), SpaceInfixOpsRule::$MESSAGE);
+    }
   }
 
   public function Parameter(&$node) {
