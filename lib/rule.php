@@ -11,14 +11,15 @@ class Rule {
   protected $severity;
   protected $options = [];
 
-  static $SEVERITY = [
+  public static $classMap = [];
+  public static $SEVERITY = [
     'off' => 0,
     'warn' => 1,
     'error' => 2,
     'fatal' => 3,
   ];
 
-  static function severityToString(int $severity) {
+  public static function severityToString(int $severity) {
     foreach (Rule::$SEVERITY as $label => $val) {
       if ($val === $severity) {
         return $label;
@@ -27,7 +28,7 @@ class Rule {
     return 'unknown';
   }
 
-  static function removeComments(string $str): string {
+  public static function removeComments(string $str): string {
     // remove comments
     // type: /* ... */
     $str = preg_replace('/\/\*.+\*\//sU', '', $str);
@@ -36,7 +37,7 @@ class Rule {
     return $str;
   }
 
-  static function isSpace(string $str, bool $withNewLine): bool {
+  public static function isSpace(string $str, bool $withNewLine): bool {
     $str = Rule::removeComments($str);
     if ($withNewLine) {
       preg_match('/^\s+$/', $str, $matches);
@@ -44,6 +45,10 @@ class Rule {
       preg_match('/^[ \t]+$/', $str, $matches);
     }
     return !empty($matches);
+  }
+
+  public static function register(string $ruleFileName, $ruleClass) {
+    self::$classMap[pathinfo($ruleFileName, PATHINFO_FILENAME)] = $ruleClass;
   }
 
   function __construct(&$context, string $id, $data) {

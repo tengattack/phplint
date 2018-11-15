@@ -78,4 +78,4 @@ class NoEmptyRule extends Rule {
 
 }
 
-return 'NoEmptyRule';
+Rule::register(__FILE__, 'NoEmptyRule');

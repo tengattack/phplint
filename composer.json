@@ -18,5 +18,13 @@
     },
     "bin": [
         "bin/phplint"
-    ]
+    ],
+    "scripts": {
+        "test": [
+            "phpunit"
+        ]
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7"
+    }
 }

@@ -23,4 +23,4 @@ class NoMixedSpacesAndTabsRule extends Rule {
 
 }
 
-return 'NoMixedSpacesAndTabsRule';
+Rule::register(__FILE__, 'NoMixedSpacesAndTabsRule');

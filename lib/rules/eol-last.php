@@ -38,4 +38,4 @@ class EOLLastRule extends Rule {
 
 }
 
-return 'EOLLastRule';
+Rule::register(__FILE__, 'EOLLastRule');

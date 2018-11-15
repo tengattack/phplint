@@ -91,4 +91,4 @@ class ArrayBracketSpacingRule extends Rule {
   }
 }
 
-return 'ArrayBracketSpacingRule';
+Rule::register(__FILE__, 'ArrayBracketSpacingRule');

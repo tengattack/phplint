@@ -103,4 +103,4 @@ class SpacedCommentRule extends Rule {
   }
 }
 
-return 'SpacedCommentRule';
+Rule::register(__FILE__, 'SpacedCommentRule');

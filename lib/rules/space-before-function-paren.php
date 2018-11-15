@@ -52,4 +52,4 @@ class SpaceBeforeFunctionParenRule extends Rule {
 
 }
 
-return 'SpaceBeforeFunctionParenRule';
+Rule::register(__FILE__, 'SpaceBeforeFunctionParenRule');

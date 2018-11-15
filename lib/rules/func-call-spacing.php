@@ -52,4 +52,4 @@ class FuncCallSpacingRule extends Rule {
 
 }
 
-return 'FuncCallSpacingRule';
+Rule::register(__FILE__, 'FuncCallSpacingRule');

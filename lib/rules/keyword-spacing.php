@@ -168,4 +168,4 @@ class KeywordSpacingRule extends Rule {
 
 }
 
-return 'KeywordSpacingRule';
+Rule::register(__FILE__, 'KeywordSpacingRule');

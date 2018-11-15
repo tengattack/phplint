@@ -88,4 +88,4 @@ class CurlyRule extends Rule {
 
 }
 
-return 'CurlyRule';
+Rule::register(__FILE__, 'CurlyRule');

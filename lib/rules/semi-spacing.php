@@ -75,4 +75,4 @@ class SemiSpacingRule extends Rule {
 
 }
 
-return 'SemiSpacingRule';
+Rule::register(__FILE__, 'SemiSpacingRule');

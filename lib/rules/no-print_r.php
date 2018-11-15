@@ -21,4 +21,4 @@ class NoPrintRRule extends Rule {
 
 }
 
-return 'NoPrintRRule';
+Rule::register(__FILE__, 'NoPrintRRule');

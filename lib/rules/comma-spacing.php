@@ -98,4 +98,4 @@ class CommaSpacingRule extends Rule {
 
 }
 
-return 'CommaSpacingRule';
+Rule::register(__FILE__, 'CommaSpacingRule');

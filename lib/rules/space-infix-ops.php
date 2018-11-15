@@ -126,4 +126,4 @@ class SpaceInfixOpsRule extends Rule {
 
 }
 
-return 'SpaceInfixOpsRule';
+Rule::register(__FILE__, 'SpaceInfixOpsRule');

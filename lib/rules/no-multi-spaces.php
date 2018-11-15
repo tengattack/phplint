@@ -63,4 +63,4 @@ class NoMultiSpacesRule extends Rule {
 
 }
 
-return 'NoMultiSpacesRule';
+Rule::register(__FILE__, 'NoMultiSpacesRule');

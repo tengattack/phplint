@@ -466,4 +466,4 @@ class IndentRule extends Rule {
 
 }
 
-return 'IndentRule';
+Rule::register(__FILE__, 'IndentRule');

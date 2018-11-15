@@ -38,4 +38,4 @@ class NoLonelyIfRule extends Rule {
 
 }
 
-return 'NoLonelyIfRule';
+Rule::register(__FILE__, 'NoLonelyIfRule');

@@ -33,4 +33,4 @@ class SpaceUnaryOpsRule extends Rule {
 
 }
 
-return 'SpaceUnaryOpsRule';
+Rule::register(__FILE__, 'SpaceUnaryOpsRule');

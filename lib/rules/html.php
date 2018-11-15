@@ -327,4 +327,4 @@ class HTMLRule extends Rule {
 
 }
 
-return 'HTMLRule';
+Rule::register(__FILE__, 'HTMLRule');

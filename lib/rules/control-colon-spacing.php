@@ -105,4 +105,4 @@ class ControlColonSpacingRule extends Rule {
 
 }
 
-return 'ControlColonSpacingRule';
+Rule::register(__FILE__, 'ControlColonSpacingRule');

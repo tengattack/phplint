@@ -111,4 +111,4 @@ class ArrayElementNewlineRule extends Rule {
 
 }
 
-return 'ArrayElementNewlineRule';
+Rule::register(__FILE__, 'ArrayElementNewlineRule');

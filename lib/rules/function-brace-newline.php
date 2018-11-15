@@ -65,4 +65,4 @@ class FunctionBraceNewlineRule extends Rule {
 
 }
 
-return 'FunctionBraceNewlineRule';
+Rule::register(__FILE__, 'FunctionBraceNewlineRule');

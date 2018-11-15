@@ -14,4 +14,4 @@ class NoExitRule extends Rule {
 
 }
 
-return 'NoExitRule';
+Rule::register(__FILE__, 'NoExitRule');

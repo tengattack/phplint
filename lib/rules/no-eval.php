@@ -14,4 +14,4 @@ class NoEvalRule extends Rule {
 
 }
 
-return 'NoEvalRule';
+Rule::register(__FILE__, 'NoEvalRule');

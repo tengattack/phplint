@@ -1,0 +1,22 @@
+<phpunit
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/|version|/phpunit.xsd"
+        bootstrap="./tests/lib/autoload.php">
+    <filter>
+        <whitelist processUncoveredFilesFromWhitelist="true">
+            <directory suffix=".php">./lib</directory>
+            <exclude>
+                <file>./lib/cli.php</file>
+            </exclude>
+        </whitelist>
+    </filter>
+    <logging>
+        <log type="coverage-text" target="php://stdout" showUncoveredFiles="false"/>
+    </logging>
+    <testsuites>
+        <testsuite name="phplint">
+            <directory suffix=".php">./tests</directory>
+            <exclude>./tests/lib</exclude>
+        </testsuite>
+    </testsuites>
+</phpunit>

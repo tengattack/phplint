@@ -69,4 +69,4 @@ class NoWhitespaceBeforePropertyRule extends Rule {
 
 }
 
-return 'NoWhitespaceBeforePropertyRule';
+Rule::register(__FILE__, 'NoWhitespaceBeforePropertyRule');

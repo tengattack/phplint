@@ -18,4 +18,4 @@ class NoArrayConstructorRule extends Rule {
   }
 }
 
-return 'NoArrayConstructorRule';
+Rule::register(__FILE__, 'NoArrayConstructorRule');

@@ -58,4 +58,4 @@ class NoExtraSemiRule extends Rule {
 
 }
 
-return 'NoExtraSemiRule';
+Rule::register(__FILE__, 'NoExtraSemiRule');

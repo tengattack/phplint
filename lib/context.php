@@ -21,7 +21,7 @@ class Context {
   private $anyTokenSelectors;
   public $stats = [];
 
-  static function parseSelector(string $selectorName) {
+  public static function parseSelector(string $selectorName) {
     return (new Selector())->parse($selectorName);
   }
 
@@ -39,7 +39,12 @@ class Context {
     $this->ruleObjects = [];
     $this->selectors = [];
     foreach ($rules as $rule => $level) {
-      $Rule = require(ROOT . '/lib/rules/' . $rule . '.php');
+      if (key_exists($rule, Rule::$classMap)) {
+        $Rule = Rule::$classMap[$rule];
+      } else {
+        require_once(ROOT . '/lib/rules/' . $rule . '.php');
+        $Rule = Rule::$classMap[$rule];
+      }
       $this->ruleObjects []= new $Rule($this, $rule, $level);
     }
     $this->rules = $rules;

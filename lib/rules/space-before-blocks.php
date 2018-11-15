@@ -37,4 +37,4 @@ class SpaceBeforeBlocksRule extends Rule {
 
 }
 
-return 'SpaceBeforeBlocksRule';
+Rule::register(__FILE__, 'SpaceBeforeBlocksRule');

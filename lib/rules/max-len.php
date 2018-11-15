@@ -70,4 +70,4 @@ class MaxLenRule extends Rule {
 
 }
 
-return 'MaxLenRule';
+Rule::register(__FILE__, 'MaxLenRule');

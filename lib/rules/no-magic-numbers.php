@@ -65,4 +65,4 @@ class NoMagicNumbersRule extends Rule {
 
 }
 
-return 'NoMagicNumbersRule';
+Rule::register(__FILE__, 'NoMagicNumbersRule');

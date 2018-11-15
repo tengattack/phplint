@@ -35,4 +35,4 @@ class EqeqeqRule extends Rule {
 
 }
 
-return 'EqeqeqRule';
+Rule::register(__FILE__, 'EqeqeqRule');

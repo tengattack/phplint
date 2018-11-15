@@ -45,4 +45,4 @@ class NoMultipleEmptyLinesRule extends Rule {
 
 }
 
-return 'NoMultipleEmptyLinesRule';
+Rule::register(__FILE__, 'NoMultipleEmptyLinesRule');

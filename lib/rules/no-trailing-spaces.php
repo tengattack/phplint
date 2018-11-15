@@ -31,4 +31,4 @@ class NoTrailingSpacesRule extends Rule {
 
 }
 
-return 'NoTrailingSpacesRule';
+Rule::register(__FILE__, 'NoTrailingSpacesRule');

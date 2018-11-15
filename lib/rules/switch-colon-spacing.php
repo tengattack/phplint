@@ -23,4 +23,4 @@ class SwitchColonSpacingRule extends Rule {
 
 }
 
-return 'SwitchColonSpacingRule';
+Rule::register(__FILE__, 'SwitchColonSpacingRule');

@@ -48,4 +48,4 @@ class SpaceInParensRule extends Rule {
 
 }
 
-return 'SpaceInParensRule';
+Rule::register(__FILE__, 'SpaceInParensRule');

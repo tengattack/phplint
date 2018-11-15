@@ -80,4 +80,4 @@ class CamelCaseRule extends Rule {
   }
 }
 
-return 'CamelCaseRule';
+Rule::register(__FILE__, 'CamelCaseRule');
