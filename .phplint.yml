@@ -2,7 +2,7 @@ rules:
   no-exit: "error"
   no-eval: "error"
   no-array-constructor: "error"
-  camelcase: [ "error", "never", { "ignore": [ "Datas", "classMap" ] } ]
+  camelcase: [ "error", "never", { "ignore": [ "Datas", "classMap", "className" ] } ]
   no-whitespace-before-property: "error"
   no-lonely-if: "error"
   switch-colon-spacing: "error"
@@ -11,6 +11,7 @@ rules:
   space-in-parens: [ "error", "never" ]
   eqeqeq: "error"
   curly: [ "error", "multi" ]
+  quotes: [ "error", "single", { "avoidEscape": true, "allowTemplateLiterals": true } ]
   array-bracket-spacing: [ "error", "never" ]
   comma-spacing: [ "error", { "before": false, "after": true } ]
   keyword-spacing: [ "error", { "before": true, "after": true } ]
