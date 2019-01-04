@@ -62,7 +62,8 @@ class QuotesRule extends Rule {
           } else {
             // doublequote
             if ($this->quoteOption === 'single') {
-              if ($this->avoidEscape && strpos($text, "'") !== false) {
+              if ($this->avoidEscape &&
+                  (strpos($text, "'") !== false || strpos($text, "\\") !== false)) {
                 break;
               }
               $this->createErrorMessage($node, $token, $this->quoteOption);

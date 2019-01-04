@@ -10,6 +10,7 @@ final class QuotesRuleTest extends RuleTestCase {
 \$c = 'foo"bar"';
 echo "bar'a'";
 echo "bar\$a";
+echo "bar\\n";
 EOF;
 
     public function testDefault() {
@@ -21,7 +22,7 @@ EOF;
         // case 2 (default quote option is single)
         $rules = ['quotes' => ['error', ['avoidEscape' => false]]];
         $report = processSource($this->source, $rules);
-        $this->assertLineColumn([[3, 5], [5, 5]], $report);
+        $this->assertLineColumn([[3, 5], [5, 5], [7, 5]], $report);
     }
 
     public function testSingle() {
@@ -31,7 +32,7 @@ EOF;
             'allowTemplateLiterals' => false,
         ]]];
         $report = processSource($this->source, $rules);
-        $this->assertLineColumn([[3, 5], [5, 5], [6, 5]], $report);
+        $this->assertLineColumn([[3, 5], [5, 5], [6, 5], [7, 5]], $report);
 
         // case 2
         $rules['quotes'][2]['avoidEscape'] = true;
@@ -43,7 +44,7 @@ EOF;
         $rules['quotes'][2]['avoidEscape'] = false;
         $rules['quotes'][2]['allowTemplateLiterals'] = true;
         $report = processSource($this->source, $rules);
-        $this->assertLineColumn([[3, 5], [5, 5]], $report);
+        $this->assertLineColumn([[3, 5], [5, 5], [7, 5]], $report);
 
         // case 4 (default)
         $rules['quotes'][2]['avoidEscape'] = true;
