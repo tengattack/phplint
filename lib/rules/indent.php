@@ -426,7 +426,8 @@ class IndentRule extends Rule {
       if ($token->kind === TokenKind::ScriptSectionEndTag) {
         // reset indent
         $this->offsets->indent = 0;
-      } elseif ($token->kind === TokenKind::StringLiteralToken) {
+      } elseif (in_array($token->kind, [TokenKind::StringLiteralToken, TokenKind::EncapsedAndWhitespace])) {
+        // TokenKind::EncapsedAndWhitespace also could appears in Node::StringLiteral
         $text = $this->getTokenText($token);
         $lines = explode("\n", $text);
         $offset = 0;
