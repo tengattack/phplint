@@ -385,6 +385,9 @@ class IndentRule extends Rule {
 
   public function ProgramOnExit(&$node) {
     foreach ($node->getChildTokens() as $token) {
+      if ($token->kind === TokenKind::HeredocStart) {
+        break;
+      }
       if ($token->kind === TokenKind::ScriptSectionStartTag) {
         // realign indent
         $loc = $this->context->sourceCode->getLocation($token->start);
