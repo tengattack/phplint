@@ -24,6 +24,10 @@ class EOLLastRule extends Rule {
     if ($text === '') {
       $node = $this->context->current();
       $prevToken = $this->getPreviousToken($node, $token);
+      if (!$prevToken) {
+        // maybe an empty file
+        return;
+      }
       $text = $this->getTokenText($prevToken);
       $hasNewLine = substr($text, -1, 1) === "\n";
     } else {
