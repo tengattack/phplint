@@ -9,24 +9,29 @@ class NoLonelyIfRule extends Rule {
   }
 
   private function countExtraNode(&$node, &$nodeIf): int {
-    $extraNode = 0;
+    $extraNodes = 0;
+    $ifNodes = 0;
     foreach ($node->getChildNodes() as $child) {
-      if ($extraNode > 1) {
+      if ($extraNodes > 1) {
         break;
       }
       switch ($child->getNodeKindName()) {
         case 'IfStatementNode':
           $nodeIf = $child;
+          if ($ifNodes > 0) {
+            $extraNodes++;
+          }
+          $ifNodes++;
           break;
         case 'CompoundStatementNode':
           // walk into
-          $extraNode += $this->countExtraNode($child, $nodeIf);
+          $extraNodes += $this->countExtraNode($child, $nodeIf);
           break;
         default:
-          $extraNode++;
+          $extraNodes++;
       }
     }
-    return $extraNode;
+    return $extraNodes;
   }
 
   public function ElseClauseNode(&$node) {
