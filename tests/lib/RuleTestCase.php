@@ -23,4 +23,16 @@ abstract class RuleTestCase extends TestCase {
       ], $messages[$i]);
     }
   }
+
+  public function assertContainsMessage($message, $report) {
+    $messages = $report->getResult()->messages;
+    $found = false;
+    foreach ($messages as $m) {
+      if ($m['message'] === $message) {
+        $found = true;
+        break;
+      }
+    }
+    $this->assertTrue($found, "It should contain message '" . $message . "'");
+  }
 }

@@ -1,4 +1,5 @@
 rules:
+  syntax: "error"
   no-exit: "error"
   no-eval: "error"
   no-array-constructor: "error"
