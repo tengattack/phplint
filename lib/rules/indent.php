@@ -336,6 +336,7 @@ class IndentRule extends Rule {
       case TokenKind::ArrowToken:
       case TokenKind::DoubleArrowToken:
       case TokenKind::ColonColonToken:
+      case TokenKind::UseKeyword:
       case TokenKind::EqualsToken:
         $this->offsets->setDesiredOffsets([$token->fullStart, $node->getEndPosition()], $token);
         break;
