@@ -40,4 +40,43 @@ EOF;
         $this->assertLineColumn([[3, 1], [5, 1], [7, 1], [8, 1]], $report);
     }
 
+    public function testFunctionUse()
+    {
+        // wrong indent
+        $source = <<<EOF
+<?php
+\$array = [
+    4,
+    5,
+];
+\$a = 1;
+array_map(function (\$v)
+    use (\$a) {
+        \$a = \$a + 1;
+    return \$v + \$a;
+}, \$array);
+EOF;
+        $rules = ['indent' => ['error']];
+        $report = processSource($source, $rules);
+        $this->assertLineColumn([[8, 1], [9, 1]], $report);
+
+        // correct indent
+        $source = <<<EOF
+<?php
+\$array = [
+    4,
+    5,
+];
+\$a = 1;
+array_map(function (\$v)
+        use (\$a) {
+    \$a = \$a + 1;
+    return \$v + \$a;
+}, \$array);
+EOF;
+        $rules = ['indent' => ['error']];
+        $report = processSource($source, $rules);
+        $this->assertLineColumn([], $report);
+    }
+
 }
