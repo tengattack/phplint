@@ -42,6 +42,7 @@ EOF;
 
     public function testFunctionUse()
     {
+        // wrong indent
         $source = <<<EOF
 <?php
 \$array = [
@@ -58,6 +59,24 @@ EOF;
         $rules = ['indent' => ['error']];
         $report = processSource($source, $rules);
         $this->assertLineColumn([[8, 1], [9, 1]], $report);
+
+        // correct indent
+        $source = <<<EOF
+<?php
+\$array = [
+    4,
+    5,
+];
+\$a = 1;
+array_map(function (\$v)
+        use (\$a) {
+    \$a = \$a + 1;
+    return \$v + \$a;
+}, \$array);
+EOF;
+        $rules = ['indent' => ['error']];
+        $report = processSource($source, $rules);
+        $this->assertEmpty($report->getResult()->messages);
     }
 
 }
