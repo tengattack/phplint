@@ -76,7 +76,7 @@ array_map(function (\$v)
 EOF;
         $rules = ['indent' => ['error']];
         $report = processSource($source, $rules);
-        $this->assertEmpty($report->getResult()->messages);
+        $this->assertLineColumn([], $report);
     }
 
 }
