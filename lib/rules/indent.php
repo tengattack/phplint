@@ -338,7 +338,11 @@ class IndentRule extends Rule {
       case TokenKind::ColonColonToken:
       case TokenKind::UseKeyword:
       case TokenKind::EqualsToken:
-        $this->offsets->setDesiredOffsets([$token->fullStart, $node->getEndPosition()], $token);
+          if (TokenKind::UseKeyword !== $token->kind) {
+              $this->offsets->setDesiredOffsets([$token->fullStart, $node->getEndPosition()], $token);
+          } elseif ('AnonymousFunctionUseClause' === $node->getNodeKindName()) {
+              $this->offsets->setDesiredOffsets([$token->fullStart, $node->getEndPosition()], $token);
+          }
         break;
       case TokenKind::ColonToken:
         $offset = 1;
