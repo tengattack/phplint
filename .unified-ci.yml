@@ -3,4 +3,4 @@ tests:
   php:
     coverage: 'Lines:.*?[-+]?((?:\d*\.\d+|\d+)%)'
     cmds:
-      - 'vendor/bin/phpunit --coverage-text --colors=never"'
+      - 'vendor/bin/phpunit --coverage-text --colors=never'

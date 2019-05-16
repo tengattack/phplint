@@ -339,7 +339,7 @@ class IndentRule extends Rule {
                 case TokenKind::UseKeyword:
                     // 只对匿名函数中的 use 关键字进行额外的缩进
                     // 不对引入类或 trait 的 use 关键字进行处理
-                    if ('AnonymousFunctionUseClause' === $node->getNodeKindName()) {
+                    if ('AnonymousFunctionUseClause' === $kind_name) {
                         $this->offsets->setDesiredOffsets([$token->fullStart, $node->getEndPosition()], $token);
                     }
                     break;
