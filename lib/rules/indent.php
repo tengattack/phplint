@@ -242,147 +242,153 @@ class IndentRule extends Rule {
     }
   }
 
-  public function Program(&$node) {
-    $kindName = $node->getNodeKindName();
-    switch ($kindName) {
-    case 'InlineHtml':
-      return;
-    case 'BinaryExpression':
-    case 'TernaryExpression':
-      $parent = $node;
-      do {
-        $parent = $parent->parent;
-        $parentKindName = $parent ? $parent->getNodeKindName() : '';
-      } while ($parentKindName === $kindName);
-      if ($parentKindName === 'ExpressionStatement') {
-        // binary expression under expression statement
-        $token = $node->getChildTokens()->current();
-        if ($token) {
-          $this->offsets->setDesiredOffsets([$token->fullStart, $node->getEndPosition()], $token);
+    public function Program(&$node)
+    {
+        $kind_name = $node->getNodeKindName();
+        switch ($kind_name) {
+            case 'InlineHtml':
+                return;
+            case 'BinaryExpression':
+            case 'TernaryExpression':
+                $parent = $node;
+                do {
+                    $parent = $parent->parent;
+                    $parent_kind_name = $parent ? $parent->getNodeKindName() : '';
+                } while ($parent_kind_name === $kind_name);
+                if ($parent_kind_name === 'ExpressionStatement') {
+                    // binary expression under expression statement
+                    $token = $node->getChildTokens()->current();
+                    if ($token) {
+                        $this->offsets->setDesiredOffsets([$token->fullStart, $node->getEndPosition()], $token);
+                    }
+                }
+                return;
+            case 'StringLiteral':
+                $token = $node->getChildTokens()->current();
+                if ($token) {
+                    $this->offsets->setDesiredOffsets([$token->start + 1, $node->getEndPosition() - 1], $token);
+                }
+                return;
+            case 'ReturnStatement':
+            case 'CaseStatementNode':
+                $token = $node->getChildTokens()->current();
+                if ($token) {
+                    $this->offsets->setDesiredOffsets([$token->start, $node->getEndPosition()], $token);
+                }
+                return;
+            case 'ExpressionStatement':
+                $parent_kind_name = $node->parent ? $node->parent->getNodeKindName() : '';
+                if (in_array($parent_kind_name, self::$OneLineStatements)) {
+                    $token = $node->getDescendantTokens()->current();
+                    if ($token) {
+                        $this->offsets->setDesiredOffsets([$token->start, $node->getEndPosition()], $token);
+                    }
+                }
+                return;
+            case 'MemberAccessExpression':
+                $parent = $node;
+                do {
+                    $parent = $parent->parent;
+                    $parent_kind_name = $parent ? $parent->getNodeKindName() : '';
+                } while (in_array($parent_kind_name, ['MemberAccessExpression', 'CallExpression']));
+                if ($parent_kind_name === 'ExpressionStatement') {
+                    // member access expression under expression statement
+                    $token = $node->getChildTokens()->current();
+                    if ($token) {
+                        $this->offsets->setDesiredOffsets([$token->fullStart, $node->getEndPosition()], $token);
+                    }
+                }
+                return;
+            case 'ParameterDeclarationList':
+                $token = $node->getDescendantTokens()->current();
+                if ($token) {
+                    $offset = $this->indentOpts['FunctionDeclaration']['parameters'];
+                    $this->offsets->setDesiredOffsets([$node->getFullStart(), $node->getEndPosition()],
+                        $token, null, $offset);
+                }
+                return;
         }
-      }
-      return;
-    case 'StringLiteral':
-      $token = $node->getChildTokens()->current();
-      if ($token) {
-        $this->offsets->setDesiredOffsets([$token->start + 1, $node->getEndPosition() - 1], $token);
-      }
-      return;
-    case 'ReturnStatement':
-    case 'CaseStatementNode':
-      $token = $node->getChildTokens()->current();
-      if ($token) {
-        $this->offsets->setDesiredOffsets([$token->start, $node->getEndPosition()], $token);
-      }
-      return;
-    case 'ExpressionStatement':
-      $parentKindName = $node->parent ? $node->parent->getNodeKindName() : '';
-      if (in_array($parentKindName, self::$OneLineStatements)) {
-        $token = $node->getDescendantTokens()->current();
-        if ($token) {
-          $this->offsets->setDesiredOffsets([$token->start, $node->getEndPosition()], $token);
+        // common
+        $open_brace = $close_brace = $open_paren = $close_paren = $open_bracket = $close_bracket = null;
+        foreach ($node->getChildTokens() as $token) {
+            switch ($token->kind) {
+                case TokenKind::OpenBraceToken:
+                    $open_brace = $token;
+                    break;
+                case TokenKind::OpenParenToken:
+                    $open_paren = $token;
+                    break;
+                case TokenKind::OpenBracketToken:
+                    $open_bracket = $token;
+                    break;
+                case TokenKind::CloseBraceToken:
+                    $close_brace = $token;
+                    break;
+                case TokenKind::CloseParenToken:
+                    $close_paren = $token;
+                    break;
+                case TokenKind::CloseBracketToken:
+                    $close_bracket = $token;
+                    break;
+                case TokenKind::ArrowToken:
+                case TokenKind::DoubleArrowToken:
+                case TokenKind::ColonColonToken:
+                case TokenKind::EqualsToken:
+                    $this->offsets->setDesiredOffsets([$token->fullStart, $node->getEndPosition()], $token);
+                    break;
+                case TokenKind::UseKeyword:
+                    // 只对匿名函数中的 use 关键字进行额外的缩进
+                    // 不对引入类或 trait 的 use 关键字进行处理
+                    if ('AnonymousFunctionUseClause' === $kind_name) {
+                        $this->offsets->setDesiredOffsets([$token->fullStart, $node->getEndPosition()], $token);
+                    }
+                    break;
+                case TokenKind::ColonToken:
+                    $offset = 1;
+                    if (in_array($kind_name, ['FunctionDeclaration', 'MethodDeclaration'])) {
+                        // defined function return type
+                        // do need to handle
+                        break;
+                    } elseif ($kind_name === 'SwitchStatementNode') {
+                        $offset = $this->indentOpts['SwitchCase'];
+                    }
+                    $end_position = $node->getEndPosition();
+                    $end_token = null;
+                    foreach ($node->getChildTokens() as $sub_token) {
+                        // until end keywords
+                        if (in_array($sub_token->kind, self::$EndSectionKeywords)) {
+                            $end_position = $sub_token->start - 1;
+                            $end_token = $sub_token;
+                            break;
+                        }
+                    }
+                    $this->offsets->setDesiredOffsets([$token->fullStart, $end_position], $token, $end_token, $offset);
+                    break;
+            }
         }
-      }
-      return;
-    case 'MemberAccessExpression':
-      $parent = $node;
-      do {
-        $parent = $parent->parent;
-        $parentKindName = $parent ? $parent->getNodeKindName() : '';
-      } while (in_array($parentKindName, ['MemberAccessExpression', 'CallExpression']));
-      if ($parentKindName === 'ExpressionStatement') {
-        // member access expression under expression statement
-        $token = $node->getChildTokens()->current();
-        if ($token) {
-          $this->offsets->setDesiredOffsets([$token->fullStart, $node->getEndPosition()], $token);
+        if ($open_brace && $close_brace) {
+            $offset = 1;
+            if ($kind_name === 'SwitchStatementNode') {
+                $offset = $this->indentOpts['SwitchCase'];
+            }
+            $parent_kind_name = $node->parent ? $node->parent->getNodeKindName() : '';
+            $merge_block = !in_array($parent_kind_name, self::$OneLineStatements);
+            $this->offsets->setDesiredOffsets([$open_brace->start + 1, $close_brace->start, 1],
+                $open_brace, $merge_block ? $close_brace : null, $offset);
         }
-      }
-      return;
-    case 'ParameterDeclarationList':
-      $token = $node->getDescendantTokens()->current();
-      if ($token) {
-        $offset = $this->indentOpts['FunctionDeclaration']['parameters'];
-        $this->offsets->setDesiredOffsets([$node->getFullStart(), $node->getEndPosition()], $token, null, $offset);
-      }
-      return;
-    }
-    // common
-    $openBrace = null;
-    $closeBrace = null;
-    $openParen = null;
-    $closeParen = null;
-    $openBracket = null;
-    $closeBracket = null;
-    foreach ($node->getChildTokens() as $token) {
-      switch ($token->kind) {
-      case TokenKind::OpenBraceToken:
-        $openBrace = $token;
-        break;
-      case TokenKind::OpenParenToken:
-        $openParen = $token;
-        break;
-      case TokenKind::OpenBracketToken:
-        $openBracket = $token;
-        break;
-      case TokenKind::CloseBraceToken:
-        $closeBrace = $token;
-        break;
-      case TokenKind::CloseParenToken:
-        $closeParen = $token;
-        break;
-      case TokenKind::CloseBracketToken:
-        $closeBracket = $token;
-        break;
-      case TokenKind::ArrowToken:
-      case TokenKind::DoubleArrowToken:
-      case TokenKind::ColonColonToken:
-      case TokenKind::UseKeyword:
-      case TokenKind::EqualsToken:
-        $this->offsets->setDesiredOffsets([$token->fullStart, $node->getEndPosition()], $token);
-        break;
-      case TokenKind::ColonToken:
-        $offset = 1;
-        if (in_array($kindName, ['FunctionDeclaration', 'MethodDeclaration'])) {
-          // defined function return type
-          // do need to handle
-          break;
-        } elseif ($kindName === 'SwitchStatementNode') {
-          $offset = $this->indentOpts['SwitchCase'];
+        if ($open_paren && $close_paren) {
+            $offset = 1;
+            if (strpos($kind_name, 'Statement') !== false || $kind_name === 'ElseIfClauseNode') {
+                $offset = $this->indentOpts['Condition'];
+            }
+            $this->offsets->setDesiredOffsets([$open_paren->start + 1, $close_paren->fullStart],
+                $open_paren, $close_paren, $offset);
         }
-        $endPosition = $node->getEndPosition();
-        $endToken = null;
-        foreach ($node->getChildTokens() as $subToken) {
-          // until end keywords
-          if (in_array($subToken->kind, self::$EndSectionKeywords)) {
-            $endPosition = $subToken->start - 1;
-            $endToken = $subToken;
-            break;
-          }
+        if ($open_bracket && $close_bracket) {
+            $this->offsets->setDesiredOffsets([$open_bracket->start + 1, $close_bracket->fullStart],
+                $open_bracket, $close_bracket);
         }
-        $this->offsets->setDesiredOffsets([$token->fullStart, $endPosition], $token, $endToken, $offset);
-        break;
-      }
     }
-    if ($openBrace && $closeBrace) {
-      $offset = 1;
-      if ($kindName === 'SwitchStatementNode') {
-        $offset = $this->indentOpts['SwitchCase'];
-      }
-      $parentKindName = $node->parent ? $node->parent->getNodeKindName() : '';
-      $mergeBlock = !in_array($parentKindName, self::$OneLineStatements);
-      $this->offsets->setDesiredOffsets([$openBrace->start + 1, $closeBrace->start, 1], $openBrace, $mergeBlock ? $closeBrace : null, $offset);
-    }
-    if ($openParen && $closeParen) {
-      $offset = 1;
-      if (strpos($kindName, 'Statement') !== false || $kindName === 'ElseIfClauseNode') {
-        $offset = $this->indentOpts['Condition'];
-      }
-      $this->offsets->setDesiredOffsets([$openParen->start + 1, $closeParen->fullStart], $openParen, $closeParen, $offset);
-    }
-    if ($openBracket && $closeBracket) {
-      $this->offsets->setDesiredOffsets([$openBracket->start + 1, $closeBracket->fullStart], $openBracket, $closeBracket);
-    }
-  }
 
   public function ProgramOnExit(&$node) {
     foreach ($node->getChildTokens() as $token) {

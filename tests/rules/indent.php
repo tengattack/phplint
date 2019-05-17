@@ -45,34 +45,78 @@ EOF;
         // wrong indent
         $source = <<<EOF
 <?php
-\$array = [
-    4,
-    5,
-];
-\$a = 1;
-array_map(function (\$v)
-    use (\$a) {
-        \$a = \$a + 1;
-    return \$v + \$a;
-}, \$array);
+
+namespace app\commands;
+
+    use GuzzleHttp\Client;  // line 5: NamespaceUseDeclaration
+use GuzzleHttp\Exception\ClientException;
+
+class ToolsController extends Controller
+{
+        use SebastianBergmann\Diff\Utils\UnifiedDiffAssertTrait;  // line 10: TraitUseClause
+    use PHPUnit\ExampleExtension\TestCaseTrait;
+
+    public function actionToJson()
+    {
+        \$array = [
+            4,
+            5,
+        ];
+        \$ab = 1;
+        \$cd = 1;
+        \$ef = 1;
+        \$array1 = array_map(function (\$v) use (\$ab,
+                \$cd, \$ef) {
+            return \$v + \$ab;
+        }, \$array);
+
+        \$array2 = array_map(function (\$v)
+            use (\$ab, \$cd, \$ef) {  // line 28: AnonymousFunctionUseClause
+            return \$v + \$ab;
+        }, \$array);
+    }
+
+}
 EOF;
         $rules = ['indent' => ['error']];
         $report = processSource($source, $rules);
-        $this->assertLineColumn([[8, 1], [9, 1]], $report);
+        $this->assertLineColumn([[5, 1], [10, 1], [28, 1]], $report);
 
         // correct indent
         $source = <<<EOF
 <?php
-\$array = [
-    4,
-    5,
-];
-\$a = 1;
-array_map(function (\$v)
-        use (\$a) {
-    \$a = \$a + 1;
-    return \$v + \$a;
-}, \$array);
+
+namespace app\commands;
+
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
+
+class ToolsController extends Controller
+{
+    use SebastianBergmann\Diff\Utils\UnifiedDiffAssertTrait;
+    use PHPUnit\ExampleExtension\TestCaseTrait;
+
+    public function actionToJson()
+    {
+        \$array = [
+            4,
+            5,
+        ];
+        \$ab = 1;
+        \$cd = 1;
+        \$ef = 1;
+        \$array1 = array_map(function (\$v) use (\$ab,
+                \$cd, \$ef) {
+            return \$v + \$ab;
+        }, \$array);
+
+        \$array2 = array_map(function (\$v)
+                use (\$ab, \$cd, \$ef) {
+            return \$v + \$ab;
+        }, \$array);
+    }
+
+}
 EOF;
         $rules = ['indent' => ['error']];
         $report = processSource($source, $rules);
