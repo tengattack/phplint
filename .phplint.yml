@@ -20,6 +20,7 @@ rules:
   space-before-blocks: [ "error", "always" ]
   no-multi-spaces: "error"
   func-call-spacing: [ "error", "never" ]
+  func-colon-spacing: [ "error", { "before": false, "after": true } ]
   spaced-comment: [ "error", "always", { "exceptions": "-+*" } ]
   function-brace-newline: [ "error", { "anonymous": false, "named": true } ]
   no-multiple-empty-lines: [ "error", { max: 2 } ]
