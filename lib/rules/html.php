@@ -218,7 +218,7 @@ class HTMLRule extends Rule {
     // parse & check style first
     $this->checkStyle($htmlLineOffsets);
 
-    $cmd = sprintf('htmllint --format=json --stdin-file-path="%s"',
+    $cmd = sprintf('htmllint --format=json --stdin="%s"',
       $this->context->sourceCode->filePath);
 
     $issueList = $this->runCommand('htmllint', $cmd, $this->_html);
