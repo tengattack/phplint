@@ -1,7 +1,9 @@
 {
     "name": "tengattack/phplint",
     "description": "A configurable linter tool for PHP.",
-    "version": "0.2.3",
+    "version": "v0.2.4",
+    "minimum-stability": "stable",
+    "prefer-stable": true,
     "type": "library",
     "keywords": ["phplint","parser","lint","linter"],
     "homepage": "https://github.com/tengattack/phplint",
