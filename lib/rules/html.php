@@ -87,8 +87,7 @@ class HTMLRule extends Rule {
   }
 
   private function reportStyleLint($issue, $pos) {
-    $htmlPos = $this->getOriginalPosition($pos, $this->_styleMasks);
-    $originalPos = $this->getOriginalPosition($htmlPos, $this->_htmlMasks);
+    $originalPos = $this->getOriginalPosition($pos, $this->_htmlMasks);
     $this->context->report($this->id . '/style/' . $issue['rule'], $this->severity,
       null, $originalPos, $issue['text']);
   }
@@ -168,25 +167,23 @@ class HTMLRule extends Rule {
       }
     }
 
-    if ($this->_style === '') {
-      return;
-    }
-
     if ($styleLinter === 'stylelint') {
-      $cmd = sprintf('stylelint -f json -s css --stdin --stdin-filename "%s"',
+      // use full html content for inline style lint
+      $cmd = sprintf('stylelint -f json -s html --stdin --stdin-filename "%s"',
         $this->context->sourceCode->filePath);
 
-      $issueList = $this->runCommand('stylelint', $cmd, $this->_style);
+      $issueList = $this->runCommand('stylelint', $cmd, $this->_html);
       if ($issueList) {
-        $styleLineOffsets = SourceCode::getSourceLineStartIndices($this->_style);
         // only one file was provided
         $result = $issueList[0];
         foreach ($result['warnings'] as $issue) {
-          $issue['position'] = SourceCode::getSourcePosition($issue, $styleLineOffsets);
+          $issue['position'] = SourceCode::getSourcePosition($issue, $htmlLineOffsets);
           $this->reportStyleLint($issue, $issue['position']);
         }
       }
-    } elseif ($styleLinter === 'scss-lint') { // deprecated
+    }
+
+    if ($styleLinter === 'scss-lint' && $this->_style !== '') { // deprecated
       $cmd = sprintf('scss-lint --format=JSON --stdin-file-path="%s"',
         $this->context->sourceCode->filePath);
 
