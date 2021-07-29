@@ -17,7 +17,7 @@ abstract class RuleTestCase extends TestCase {
     for ($i = 0; $i < count($linecolumns); $i++) {
       $pos = $linecolumns[$i];
       $this->assertArraySubset([
-        'ruleId' => $this->ruleId,
+        'ruleId' => count($pos) > 2 ? $pos[2] : $this->ruleId,
         'line' => $pos[0],  // line
         'column' => $pos[1],  // column
       ], $messages[$i]);

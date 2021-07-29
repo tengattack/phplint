@@ -2,3 +2,6 @@
 .vscode
 
 vendor/
+
+.htmllintrc
+.stylelintrc.yaml

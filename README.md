@@ -7,7 +7,8 @@ A configurable linter tool for PHP.
 ### Dependencies
 
 * [htmllint-cli](https://github.com/htmllint/htmllint-cli)
-* [scss-lint](https://github.com/brigade/scss-lint)
+* [stylelint](https://github.com/stylelint/stylelint)
+* [scss-lint](https://github.com/brigade/scss-lint) (deprecated)
 
 ### Installation
 
@@ -15,7 +16,9 @@ A configurable linter tool for PHP.
 $ composer global require tengattack/phplint
 $ # htmllint is used by rule `html` (it has to be latest)
 $ npm i -g htmllint/htmllint-cli
-$ # scss-lint is used by rule `html`
+$ # stylelint is used by rule `html`
+$ npm i -g stylelint
+$ # scss-lint is used by rule `html` (deprecated)
 $ gem install scss_lint
 ```
 
@@ -62,6 +65,15 @@ test.php:
 | 5:1 | error    | A space is required after 'if'. | keyword-spacing |
 | 5:8 | error    | Empty block statement.          | no-empty        |
 +-----+----------+---------------------------------+-----------------+
+```
+
+## Testing
+
+```sh
+vendor/bin/phpunit
+
+# single rule test
+vendor/bin/phpunit tests/rules/curly.php
 ```
 
 ## License

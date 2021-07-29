@@ -10,6 +10,7 @@ class HTMLRule extends Rule {
   private $_styleMasks = [];
   private $opts = [
     'eatNewLine' => false,
+    'styleLinter' => 'stylelint',
     'styleIndent' => 2,
   ];
 
@@ -85,7 +86,14 @@ class HTMLRule extends Rule {
     return $originalPos;
   }
 
-  private function reportStyle($issue, $pos) {
+  private function reportStyleLint($issue, $pos) {
+    $htmlPos = $this->getOriginalPosition($pos, $this->_styleMasks);
+    $originalPos = $this->getOriginalPosition($htmlPos, $this->_htmlMasks);
+    $this->context->report($this->id . '/style/' . $issue['rule'], $this->severity,
+      null, $originalPos, $issue['text']);
+  }
+
+  private function reportScssLint($issue, $pos) {
     $htmlPos = $this->getOriginalPosition($pos, $this->_styleMasks);
     $originalPos = $this->getOriginalPosition($htmlPos, $this->_htmlMasks);
     if (gettype($issue) === 'string') {
@@ -105,6 +113,7 @@ class HTMLRule extends Rule {
   }
 
   private function checkStyle($htmlLineOffsets) {
+    $styleLinter = $this->opts['styleLinter'];
     $styleIndentType = $this->opts['styleIndent'] === 'tab' ? 'tab' : 'space';
     $styleIndent = $styleIndentType === 'tab' ? 1 : (int)$this->opts['styleIndent'];
     $stylePos = 0;
@@ -159,17 +168,37 @@ class HTMLRule extends Rule {
       }
     }
 
-    $cmd = sprintf('scss-lint --format=JSON --stdin-file-path="%s"',
-      $this->context->sourceCode->filePath);
+    if ($this->_style === '') {
+      return;
+    }
 
-    $issueList = $this->runCommand('scss-lint', $cmd, $this->_style);
-    if ($issueList) {
-      $styleLineOffsets = SourceCode::getSourceLineStartIndices($this->_style);
-      // key-value style issue list
-      foreach ($issueList as $issues) {
-        foreach ($issues as $issue) {
+    if ($styleLinter === 'stylelint') {
+      $cmd = sprintf('stylelint -f json -s css --stdin --stdin-filename "%s"',
+        $this->context->sourceCode->filePath);
+
+      $issueList = $this->runCommand('stylelint', $cmd, $this->_style);
+      if ($issueList) {
+        $styleLineOffsets = SourceCode::getSourceLineStartIndices($this->_style);
+        // only one file was provided
+        $result = $issueList[0];
+        foreach ($result['warnings'] as $issue) {
           $issue['position'] = SourceCode::getSourcePosition($issue, $styleLineOffsets);
-          $this->reportStyle($issue, $issue['position']);
+          $this->reportStyleLint($issue, $issue['position']);
+        }
+      }
+    } elseif ($styleLinter === 'scss-lint') { // deprecated
+      $cmd = sprintf('scss-lint --format=JSON --stdin-file-path="%s"',
+        $this->context->sourceCode->filePath);
+
+      $issueList = $this->runCommand('scss-lint', $cmd, $this->_style);
+      if ($issueList) {
+        $styleLineOffsets = SourceCode::getSourceLineStartIndices($this->_style);
+        // key-value style issue list
+        foreach ($issueList as $issues) {
+          foreach ($issues as $issue) {
+            $issue['position'] = SourceCode::getSourcePosition($issue, $styleLineOffsets);
+            $this->reportScssLint($issue, $issue['position']);
+          }
         }
       }
     }
@@ -210,7 +239,7 @@ class HTMLRule extends Rule {
   }
 
   private function checkHTML() {
-    if (!$this->_html) {
+    if ($this->_html === '') {
       return;
     }
 
