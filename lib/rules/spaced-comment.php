@@ -49,9 +49,9 @@ class SpacedCommentRule extends Rule {
     }
     // check special comment pre colon
     if (preg_match('/^ (TEMP|TODO|FIXME|WORKAROUND|NOTICE|REVIEW)(.?)/', $commentBody, $matches)) {
-      $specialCommentPre = $matches[1];
+      $specialCommentTag = $matches[1];
       if ($matches[2] !== ':') {
-        $this->report($token, $offset + $start, "Expected a half-width colon after '$specialCommentPre' in comment.");
+        $this->report($token, $offset + $start, "Expected a half-width colon after '$specialCommentTag' in comment.");
       }
     }
     if ($end !== -1 && strlen($commentBody) > 1) {
