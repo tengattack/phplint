@@ -47,7 +47,7 @@ class SpacedCommentRule extends Rule {
         }
       }
     }
-    // check special comment pre colon
+    // check special comment colon
     if (preg_match('/^ (TEMP|TODO|FIXME|WORKAROUND|NOTICE|REVIEW)(.?)/', $commentBody, $matches)) {
       $specialCommentTag = $matches[1];
       if ($matches[2] !== ':') {
