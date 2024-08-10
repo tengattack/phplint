@@ -46,9 +46,8 @@ class FuncColonSpacingRule extends Rule {
     }
 
     public function check(&$node) {
-        $prevToken = null;
         foreach ($node->getChildTokens() as $token) {
-            if (!$prevToken && $token->kind === TokenKind::ColonToken) {
+            if ($token->kind === TokenKind::ColonToken) {
                 // before colon
                 $hasSpace = $this->isSpaceBeforeToken($token, $this->spacedBefore);
                 if ($hasSpace && !$this->spacedBefore) {
@@ -56,14 +55,16 @@ class FuncColonSpacingRule extends Rule {
                 } elseif (!$hasSpace && $this->spacedBefore) {
                     $this->reportNoEndingSpace($token);
                 }
-                $prevToken = $token;
-            } elseif ($prevToken) {
-                // after colon
-                $hasSpace = $this->isSpaceBeforeToken($token, $this->spacedAfter);
-                if ($hasSpace && !$this->spacedAfter) {
-                    $this->reportNoBeginningSpace($prevToken);
-                } elseif (!$hasSpace && $this->spacedAfter) {
-                    $this->reportRequiredBeginningSpace($prevToken);
+
+                $nextToken = $this->getNextToken($node, $token);
+                if ($nextToken) {
+                    // after colon
+                    $hasSpace = $this->isSpaceBeforeToken($nextToken, $this->spacedAfter);
+                    if ($hasSpace && !$this->spacedAfter) {
+                        $this->reportNoBeginningSpace($token);
+                    } elseif (!$hasSpace && $this->spacedAfter) {
+                        $this->reportRequiredBeginningSpace($token);
+                    }
                 }
                 break;
             }
