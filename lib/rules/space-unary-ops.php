@@ -18,7 +18,7 @@ class SpaceUnaryOpsRule extends Rule {
     if ($child) {
       // the first node (only one)
       if ($this->isSpaceBeforeNode($child, true)) {
-        $this->report($node, $child->getFullStart(), SpaceUnaryOpsRule::$MESSAGE);
+        $this->report($node, $child->getFullStartPosition(), SpaceUnaryOpsRule::$MESSAGE);
       }
     }
   }

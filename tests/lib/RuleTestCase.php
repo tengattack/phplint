@@ -16,11 +16,15 @@ abstract class RuleTestCase extends TestCase {
     $this->assertCount(count($linecolumns), $messages);
     for ($i = 0; $i < count($linecolumns); $i++) {
       $pos = $linecolumns[$i];
-      $this->assertArraySubset([
+      $expectedSubset = [
         'ruleId' => count($pos) > 2 ? $pos[2] : $this->ruleId,
         'line' => $pos[0],  // line
         'column' => $pos[1],  // column
-      ], $messages[$i]);
+      ];
+      foreach ($expectedSubset as $key => $value) {
+        $this->assertArrayHasKey($key, $messages[$i]);
+        $this->assertSame($value, $messages[$i][$key]);
+      }
     }
   }
 

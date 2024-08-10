@@ -33,7 +33,7 @@ echo 'test';
 </html>
 EOF;
 
-    public static function setUpBeforeClass() {
+    public static function setUpBeforeClass(): void {
         file_put_contents('.htmllintrc', self::$htmllintrc);
         file_put_contents('.stylelintrc.yaml', self::$stylelintrc);
     }

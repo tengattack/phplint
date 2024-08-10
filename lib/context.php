@@ -157,7 +157,7 @@ class Context {
     }
     if (is_null($pos)) {
       if ($node instanceof Node) {
-        $pos = $node->getStart();
+        $pos = $node->getStartPosition();
       } else if ($node instanceof Token) {
         $pos = $node->start;
       }

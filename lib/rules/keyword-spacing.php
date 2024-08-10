@@ -81,7 +81,7 @@ class KeywordSpacingRule extends Rule {
     $nextChild = null;
     $prevToken = $this->getPreviousToken($node, $token);
     foreach ($node->getChildNodesAndTokens() as $child) {
-      if ($child->getFullStart() >= $position) {
+      if ($child->getFullStartPosition() >= $position) {
         $nextChild = $child;
         break;
       }
@@ -107,7 +107,7 @@ class KeywordSpacingRule extends Rule {
       // if it is followed by SemicolonToken
       $lastChild = null;
       foreach ($node->getChildNodesAndTokens() as $child) {
-        if ($child->getFullStart() >= $position) {
+        if ($child->getFullStartPosition() >= $position) {
           $lastChild = $child;
         }
       }

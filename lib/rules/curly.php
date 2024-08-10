@@ -43,12 +43,12 @@ class CurlyRule extends Rule {
             default:
               if ($this->isNewLineBeforeNode($child)) {
                 if (!$colon) {
-                  $this->report($node, $child->getFullStart(), "Expected { or : after '$name'.");
+                  $this->report($node, $child->getFullStartPosition(), "Expected { or : after '$name'.");
                 }
               } else {
                 // expression in same line
                 if (!$this->multiOnly) {
-                  $this->report($node, $child->getFullStart(), "Expected { or : after '$name'.");
+                  $this->report($node, $child->getFullStartPosition(), "Expected { or : after '$name'.");
                 }
               }
           }

@@ -303,7 +303,7 @@ class IndentRule extends Rule {
                 $token = $node->getDescendantTokens()->current();
                 if ($token) {
                     $offset = $this->indentOpts['FunctionDeclaration']['parameters'];
-                    $this->offsets->setDesiredOffsets([$node->getFullStart(), $node->getEndPosition()],
+                    $this->offsets->setDesiredOffsets([$node->getFullStartPosition(), $node->getEndPosition()],
                         $token, null, $offset);
                 }
                 return;

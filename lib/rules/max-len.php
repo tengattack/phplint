@@ -45,7 +45,7 @@ class MaxLenRule extends Rule {
   }
 
   public function Program(&$node) {
-    $start = $this->context->sourceCode->getLocation($node->getFullStart());
+    $start = $this->context->sourceCode->getLocation($node->getFullStartPosition());
     $end = $this->context->sourceCode->getLocation($node->getEndPosition());
     $offsets = null;
     for ($i = max($start['line'], $this->lastLine); $i <= $end['line']; $i++) {

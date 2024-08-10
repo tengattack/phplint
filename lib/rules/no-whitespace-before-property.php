@@ -43,7 +43,7 @@ class NoWhitespaceBeforePropertyRule extends Rule {
       }
       if ($child instanceof Node) {
         if ($this->isSpaceBeforeNode($child)) {
-          $this->report($node, $child->getFullStart(), "Unexpected whitespace before property '$name'");
+          $this->report($node, $child->getFullStartPosition(), "Unexpected whitespace before property '$name'");
         }
       } else if ($child instanceof Token) {
         switch ($child->kind) {

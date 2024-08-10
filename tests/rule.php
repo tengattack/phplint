@@ -12,9 +12,9 @@ echo \$a;  // bar
 # sharp
 EOF;
     $result = Rule::removeComments($source);
-    $this->assertNotContains('foo', $result);
-    $this->assertNotContains('bar', $result);
-    $this->assertNotContains('sharp', $result);
-    $this->assertContains('echo $a', $result);
+    $this->assertStringNotContainsString('foo', $result);
+    $this->assertStringNotContainsString('bar', $result);
+    $this->assertStringNotContainsString('sharp', $result);
+    $this->assertStringContainsString('echo $a', $result);
   }
 }

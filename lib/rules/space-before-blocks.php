@@ -19,11 +19,11 @@ class SpaceBeforeBlocksRule extends Rule {
   }
 
   private function reportNoEndingSpace(&$node) {
-    $this->report($node, $node->getFullStart(), 'There should be no space before blocks.');
+    $this->report($node, $node->getFullStartPosition(), 'There should be no space before blocks.');
   }
 
   private function reportRequiredEndingSpace(&$node) {
-    $this->report($node, $node->getFullStart(), 'A space is required before blocks.');
+    $this->report($node, $node->getFullStartPosition(), 'A space is required before blocks.');
   }
 
   public function CompoundStatementNode(&$node) {

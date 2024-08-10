@@ -39,7 +39,7 @@ class SpaceInfixOpsRule extends Rule {
           continue;
         }
         if (!$this->isSpaceBeforeNode($child, true)) {
-          $this->report($node, $child->getFullStart(), SpaceInfixOpsRule::$MESSAGE);
+          $this->report($node, $child->getFullStartPosition(), SpaceInfixOpsRule::$MESSAGE);
         }
       }
     }
@@ -71,7 +71,7 @@ class SpaceInfixOpsRule extends Rule {
           continue;
         }
         if (!$this->isSpaceBeforeNode($child, true)) {
-          $this->report($node, $child->getFullStart(), SpaceInfixOpsRule::$MESSAGE);
+          $this->report($node, $child->getFullStartPosition(), SpaceInfixOpsRule::$MESSAGE);
         }
       }
     }
@@ -96,7 +96,7 @@ class SpaceInfixOpsRule extends Rule {
 
   public function ForeachValue(&$node) {
     if (!$this->isSpaceBeforeNode($node, true)) {
-      $this->report($node, $node->getFullStart(), SpaceInfixOpsRule::$MESSAGE);
+      $this->report($node, $node->getFullStartPosition(), SpaceInfixOpsRule::$MESSAGE);
     }
   }
 
@@ -118,7 +118,7 @@ class SpaceInfixOpsRule extends Rule {
           continue;
         }
         if (!$this->isSpaceBeforeNode($child, true)) {
-          $this->report($node, $child->getFullStart(), SpaceInfixOpsRule::$MESSAGE);
+          $this->report($node, $child->getFullStartPosition(), SpaceInfixOpsRule::$MESSAGE);
         }
       }
     }

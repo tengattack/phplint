@@ -42,9 +42,9 @@ class FunctionBraceNewlineRule extends Rule {
         $text = $child->getLeadingCommentAndWhitespaceText();
         $hasNewLine = strpos($text, "\n") !== false;
         if ($hasNewLine && !$this->newline[$type]) {
-          $this->report($child, $child->getFullStart(), "There should be no new line before '{'.");
+          $this->report($child, $child->getFullStartPosition(), "There should be no new line before '{'.");
         } elseif (!$hasNewLine && $this->newline[$type]) {
-          $this->report($child, $child->getFullStart(), "A new line is required before '{'.");
+          $this->report($child, $child->getFullStartPosition(), "A new line is required before '{'.");
         }
         break;
       }
